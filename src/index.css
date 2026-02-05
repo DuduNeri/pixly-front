@@ -1,8 +1,12 @@
 :root {
-  --primary-color:  #33BDC9;
-  --secondary-color: #0f172a;
-  --text-color: #ffffff;
-}
-html {
-  scroll-behavior: smooth;
+  --primary-color: #0f172a;       
+  --secondary-color: #111827;    
+  --tertiary-color: #1f2937;       
+
+  --text-color: #e5e7eb;          
+  --text-muted: #9ca3af;          
+
+  --accent-color: #22d3ee;         
+  --accent-purple: #8b5cf6;       
+  --accent-pink: #ec4899;          
 }
