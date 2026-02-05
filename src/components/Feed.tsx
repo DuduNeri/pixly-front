@@ -5,7 +5,6 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export const Feed = () => {
-  // Simulação de dados (futuramente virão do seu Backend/Banco de Dados)
   const posts = [
     {
       id: 1,
