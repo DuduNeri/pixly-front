@@ -1,10 +1,25 @@
-import { Box, IconButton, Container, Stack, Typography, Avatar, Card, CardHeader, CardContent, CardActions } from "@mui/material";
-import AddCardIcon from '@mui/icons-material/AddCard';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {
+  Box,
+  IconButton,
+  Container,
+  Stack,
+  Typography,
+  Avatar,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+} from "@mui/material";
+import { useState } from "react";
+import AddCardIcon from "@mui/icons-material/AddCard";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import PostModal from "./Modal";
 
 export const Feed = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const posts = [
     {
       id: 1,
@@ -17,7 +32,7 @@ export const Feed = () => {
       author: "Law",
       content: "KKKKKKKKKKKKKKKKKKKKK",
       date: "2 horas",
-    }
+    },
   ];
 
   return (
@@ -31,19 +46,20 @@ export const Feed = () => {
       }}
     >
       <Container
-        maxWidth="lg" 
+        maxWidth="md"
         sx={{
           minHeight: "100vh",
           borderLeft: "1px solid rgba(255,255,255,0.1)",
           borderRight: "1px solid rgba(255,255,255,0.1)",
           backgroundColor: "var(--secondary-color)",
           position: "relative",
-          pt: 10, 
+          pt: 12,
           pb: 4,
         }}
       >
-        {/* Botão de Adicionar - Agora com IconButton para melhor acessibilidade */}
+        {/* Botão de Adicionar*/}
         <IconButton
+          onClick={() => setIsModalOpen(true)}
           sx={{
             position: "absolute",
             top: 16,
@@ -61,21 +77,23 @@ export const Feed = () => {
           }}
         >
           <Typography
-          sx={{
-            padding: 1
-          }}
-          >Novo post</Typography>
+            sx={{
+              padding: 1,
+            }}
+          >
+            Novo post
+          </Typography>
           <AddCardIcon />
         </IconButton>
 
         {/* LISTA DE POSTS */}
-        <Stack spacing={3} sx={{ px: 2 }}>
+        <Stack spacing={7} sx={{ px: 2 }}>
           {posts.map((post) => (
             <Card
               key={post.id}
               sx={{
                 backgroundColor: "rgba(255, 255, 255, 0.03)",
-                backgroundImage: "none", 
+                backgroundImage: "none",
                 border: "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "16px",
                 color: "#fff",
@@ -93,18 +111,30 @@ export const Feed = () => {
                   </IconButton>
                 }
                 title={<Typography fontWeight="bold">{post.author}</Typography>}
-                subheader={<Typography variant="caption" color="rgba(255,255,255,0.5)">{post.date}</Typography>}
+                subheader={
+                  <Typography variant="caption" color="rgba(255,255,255,0.5)">
+                    {post.date}
+                  </Typography>
+                }
               />
               <CardContent sx={{ pt: 0 }}>
                 <Typography variant="body2" color="rgba(255, 255, 255, 0.8)">
                   {post.content}
                 </Typography>
               </CardContent>
-              <CardActions sx={{ borderTop: "1px solid rgba(255,255,255,0.05)", px: 2 }}>
-                <IconButton size="small" sx={{ color: "rgba(0, 183, 255, 0.6)" }}>
+              <CardActions
+                sx={{ borderTop: "1px solid rgba(255,255,255,0.05)", px: 2 }}
+              >
+                <IconButton
+                  size="small"
+                  sx={{ color: "rgba(0, 183, 255, 0.6)" }}
+                >
                   <FavoriteBorderIcon fontSize="small" />
                 </IconButton>
-                <IconButton size="small" sx={{ color: "rgba(4, 255, 88, 0.6)" }}>
+                <IconButton
+                  size="small"
+                  sx={{ color: "rgba(4, 255, 88, 0.6)" }}
+                >
                   <ChatBubbleOutlineIcon fontSize="small" />
                 </IconButton>
               </CardActions>
@@ -112,6 +142,7 @@ export const Feed = () => {
           ))}
         </Stack>
       </Container>
+        <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Box>
   );
 };
