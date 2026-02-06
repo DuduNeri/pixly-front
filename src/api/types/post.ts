@@ -10,5 +10,5 @@ export interface Post {
   contentImage?: string | null;
   userId: string;
   createdAt: string;
-  user: User; // 👈 aqui está o segredo
+  user: User; 
 }

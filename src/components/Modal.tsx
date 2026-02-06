@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { X, ImagePlus } from "lucide-react";
 import { useState } from "react";
+import { createPosts } from "../api/posts/createPost";
 
 interface PostModalProps {
   open: boolean;
@@ -18,12 +19,12 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
   const [contentText, setContentText] = useState("");
   const [image, setImage] = useState<string | null>(null);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-    }
-  };
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setImage(URL.createObjectURL(file));
+  //   }
+  // };
   const handlePost = async () => {
     try {
       onClose();
@@ -107,12 +108,12 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
             </Box>
           )}
 
-          <input
+          {/* <input
             hidden
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-          />
+          /> */}
         </Box>
 
         {/* Caption */}
