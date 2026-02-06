@@ -10,30 +10,31 @@ import {
   CardContent,
   CardActions,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PostModal from "./Modal";
+import { getPosts } from "../api/posts/searchPosts";
+import type { Post } from "../api/types/post";
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
 
-  const posts = [
-    {
-      id: 1,
-      author: "Scrum",
-      content: "KKKKKKKKKKKKKKKKKK",
-      date: "10 min",
-    },
-    {
-      id: 2,
-      author: "Law",
-      content: "KKKKKKKKKKKKKKKKKKKKK",
-      date: "2 horas",
-    },
-  ];
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const data = await getPosts();
+        setPosts(data);
+      } catch (error) {
+        console.log("Erro ao buscar posts:", error);
+      }
+    }
+
+    fetchPosts();
+  }, []); 
 
   return (
     <Box
@@ -57,7 +58,7 @@ export const Feed = () => {
           pb: 4,
         }}
       >
-        {/* Botão de Adicionar*/}
+        {/* Botão de Adicionar */}
         <IconButton
           onClick={() => setIsModalOpen(true)}
           sx={{
@@ -76,13 +77,7 @@ export const Feed = () => {
             },
           }}
         >
-          <Typography
-            sx={{
-              padding: 1,
-            }}
-          >
-            Novo post
-          </Typography>
+          <Typography sx={{ padding: 1 }}>Novo post</Typography>
           <AddCardIcon />
         </IconButton>
 
@@ -102,7 +97,7 @@ export const Feed = () => {
               <CardHeader
                 avatar={
                   <Avatar sx={{ bgcolor: "primary.main", fontSize: "1rem" }}>
-                    {post.author[0]}
+                    {post.user?.name?.[0] || "U"}
                   </Avatar>
                 }
                 action={
@@ -110,31 +105,32 @@ export const Feed = () => {
                     <MoreVertIcon />
                   </IconButton>
                 }
-                title={<Typography fontWeight="bold">{post.author}</Typography>}
+                title={
+                  <Typography fontWeight="bold">
+                    {post.user?.name || "Usuário"}
+                  </Typography>
+                }
                 subheader={
                   <Typography variant="caption" color="rgba(255,255,255,0.5)">
-                    {post.date}
+                    {post.title}
                   </Typography>
                 }
               />
+
               <CardContent sx={{ pt: 0 }}>
                 <Typography variant="body2" color="rgba(255, 255, 255, 0.8)">
-                  {post.content}
+                  {post.contentText}
                 </Typography>
               </CardContent>
+
               <CardActions
                 sx={{ borderTop: "1px solid rgba(255,255,255,0.05)", px: 2 }}
               >
-                <IconButton
-                  size="small"
-                  sx={{ color: "rgba(0, 183, 255, 0.6)" }}
-                >
+                <IconButton size="small" sx={{ color: "rgba(0, 183, 255, 0.6)" }}>
                   <FavoriteBorderIcon fontSize="small" />
                 </IconButton>
-                <IconButton
-                  size="small"
-                  sx={{ color: "rgba(4, 255, 88, 0.6)" }}
-                >
+
+                <IconButton size="small" sx={{ color: "rgba(4, 255, 88, 0.6)" }}>
                   <ChatBubbleOutlineIcon fontSize="small" />
                 </IconButton>
               </CardActions>
@@ -142,7 +138,8 @@ export const Feed = () => {
           ))}
         </Stack>
       </Container>
-        <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Box>
   );
 };
