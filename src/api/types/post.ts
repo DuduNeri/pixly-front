@@ -12,3 +12,11 @@ export interface Post {
   createdAt: string;
   user: User; 
 }
+
+// src/types/post.ts
+export type CreatePost = {
+  title?: string;          // opcional
+  contentText: string;
+  contentImage?: string | null;
+};
+

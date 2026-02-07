@@ -9,7 +9,7 @@ import {
 import { X, ImagePlus } from "lucide-react";
 import { useState } from "react";
 import { createPosts } from "../api/posts/createPost";
-
+import { api } from './../api/conection';
 interface PostModalProps {
   open: boolean;
   onClose: () => void;
@@ -19,21 +19,23 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
   const [contentText, setContentText] = useState("");
   const [image, setImage] = useState<string | null>(null);
 
-  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     setImage(URL.createObjectURL(file));
-  //   }
-  // };
   const handlePost = async () => {
     try {
-      onClose();
+      const postData = {
+        contentText,
+        contentImage: image, 
+      };
+
+      const created = await createPosts(postData)
+      console.log("Post criado:", created);
+      
       setContentText("");
       setImage(null);
     } catch (error) {
       console.error("Erro ao criar post:", error);
     }
   };
+
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -127,7 +129,7 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
             onChange={(e) => setContentText(e.target.value)}
             InputProps={{
               disableUnderline: true,
-              sx: { fontSize: 14 },
+              sx: { fontSize: 15, color: "#fff" },
             }}
           />
 

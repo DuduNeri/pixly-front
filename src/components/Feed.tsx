@@ -14,10 +14,12 @@ import { useState, useEffect } from "react";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PostModal from "./Modal";
 import { getPosts } from "../api/posts/searchPosts";
 import type { Post } from "../api/types/post";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,6 +66,25 @@ export const Feed = () => {
           sx={{
             position: "absolute",
             top: 16,
+            backgroundColor: "rgba(255,255,255,0.1)",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            borderRadius: "12px",
+            color: "#fff",
+            zIndex: 2,
+            "&:hover": {
+              backgroundColor: "rgba(255,255,255,0.2)",
+              transform: "scale(1.05)",
+            },
+          }}
+        >
+          <Typography sx={{ padding: 1 }}>Criar post</Typography>
+          <AddPhotoAlternateIcon />
+        </IconButton>
+        {/* <IconButton
+          sx={{
+            position: "absolute",
+            top: 16,
             right: 16,
             backgroundColor: "rgba(255,255,255,0.1)",
             backdropFilter: "blur(10px)",
@@ -77,9 +98,9 @@ export const Feed = () => {
             },
           }}
         >
-          <Typography sx={{ padding: 1 }}>Novo post</Typography>
-          <AddCardIcon />
-        </IconButton>
+          <Typography sx={{ padding: 1 }}>Exit</Typography>
+          <ExitToAppIcon></ExitToAppIcon>
+        </IconButton> */}
 
         {/* LISTA DE POSTS */}
         <Stack spacing={7} sx={{ px: 2 }}>
@@ -126,11 +147,17 @@ export const Feed = () => {
               <CardActions
                 sx={{ borderTop: "1px solid rgba(255,255,255,0.05)", px: 2 }}
               >
-                <IconButton size="small" sx={{ color: "rgba(0, 183, 255, 0.6)" }}>
+                <IconButton
+                  size="small"
+                  sx={{ color: "rgba(0, 183, 255, 0.6)" }}
+                >
                   <FavoriteBorderIcon fontSize="small" />
                 </IconButton>
 
-                <IconButton size="small" sx={{ color: "rgba(4, 255, 88, 0.6)" }}>
+                <IconButton
+                  size="small"
+                  sx={{ color: "rgba(4, 255, 88, 0.6)" }}
+                >
                   <ChatBubbleOutlineIcon fontSize="small" />
                 </IconButton>
               </CardActions>
