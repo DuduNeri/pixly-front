@@ -6,7 +6,6 @@ export async function loginUser(name: string, password: string) {
     localStorage.setItem("userName", response.data.user.name);
     localStorage.setItem("token", response.data.token);
     localStorage.setItem("userId", response.data.user.id);
-    console.log(response.data.token)
     return response;
 }
 

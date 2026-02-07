@@ -21,14 +21,15 @@ export default function Login() {
   async function login(e: React.FormEvent) {
     e.preventDefault();
     try {
-      await loginUser(name, password);
-      console.log(loginUser)
-      console.log(login)
+      const response = await loginUser(name, password);
       navigate("/home");
+      console.log(response.data.token)
+      return response
     } catch (error) {
       console.log("❌ Erro ao logar:", error);
       alert("Nome de usuário ou senha incorretos!");
     }
+ 
   }
 
   return (

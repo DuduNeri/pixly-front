@@ -11,7 +11,6 @@ import {
   CardActions,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import AddCardIcon from "@mui/icons-material/AddCard";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
@@ -34,9 +33,9 @@ export const Feed = () => {
         console.log("Erro ao buscar posts:", error);
       }
     }
-
+    console.log(fetchPosts)
     fetchPosts();
-  }, []); 
+  }, [isModalOpen]); 
 
   return (
     <Box
@@ -165,7 +164,6 @@ export const Feed = () => {
           ))}
         </Stack>
       </Container>
-
       <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Box>
   );
