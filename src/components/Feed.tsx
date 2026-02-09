@@ -9,11 +9,13 @@ import {
   CardHeader,
   CardContent,
   CardActions,
+  Divider,
+  CardMedia,
+  Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PostModal from "./Modal";
 import { getPosts } from "../api/posts/searchPosts";
@@ -33,132 +35,176 @@ export const Feed = () => {
         console.log("Erro ao buscar posts:", error);
       }
     }
-    console.log(fetchPosts)
     fetchPosts();
-  }, [isModalOpen]); 
+  }, [isModalOpen]);
 
   return (
     <Box
       component="main"
       sx={{
-        backgroundColor: "var(--primary-color)",
+        backgroundColor: "#0a0a0a",
         minHeight: "100vh",
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
+        alignItems: "center",
       }}
     >
-      <Container
-        maxWidth="md"
+      {/* HEADER FIXO */}
+      <Box
         sx={{
-          minHeight: "100vh",
-          borderLeft: "1px solid rgba(255,255,255,0.1)",
-          borderRight: "1px solid rgba(255,255,255,0.1)",
-          backgroundColor: "var(--secondary-color)",
-          position: "relative",
-          pt: 12,
-          pb: 4,
+          width: "100%",
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          backdropFilter: "blur(12px)",
+          backgroundColor: "rgba(10, 10, 10, 0.8)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          py: 2,
         }}
       >
-        {/* Botão de Adicionar */}
-        <IconButton
-          onClick={() => setIsModalOpen(true)}
+        <Container
+          maxWidth="md"
           sx={{
-            position: "absolute",
-            top: 16,
-            backgroundColor: "rgba(255,255,255,0.1)",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255,255,255,0.2)",
-            borderRadius: "12px",
-            color: "#fff",
-            zIndex: 2,
-            "&:hover": {
-              backgroundColor: "rgba(255,255,255,0.2)",
-              transform: "scale(1.05)",
-            },
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <Typography sx={{ padding: 1 }}>Criar post</Typography>
-          <AddPhotoAlternateIcon />
-        </IconButton>
-        {/* <IconButton
-          sx={{
-            position: "absolute",
-            top: 16,
-            right: 16,
-            backgroundColor: "rgba(255,255,255,0.1)",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255,255,255,0.2)",
-            borderRadius: "12px",
-            color: "#fff",
-            zIndex: 2,
-            "&:hover": {
-              backgroundColor: "rgba(255,255,255,0.2)",
-              transform: "scale(1.05)",
-            },
-          }}
-        >
-          <Typography sx={{ padding: 1 }}>Exit</Typography>
-          <ExitToAppIcon></ExitToAppIcon>
-        </IconButton> */}
+          <Typography
+            variant="h6"
+            fontWeight="900"
+            sx={{ color: "#fff", letterSpacing: -1 }}
+          >
+            {" "}
+            Pixly{" "}
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddPhotoAlternateIcon />}
+            onClick={() => setIsModalOpen(true)}
+            sx={{
+              borderRadius: "20px",
+              textTransform: "none",
+              fontWeight: "bold",
+              background: "var(--accent-pink)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                background: "var(--accent-pink)",
+                filter: "brightness(1.1)",
+                boxShadow: "0 6px 20px rgba(255, 20, 147, 0.3)",
+              },
+            }}
+          >
+            Criar post
+          </Button>
+        </Container>
+      </Box>
 
-        {/* LISTA DE POSTS */}
-        <Stack spacing={7} sx={{ px: 2 }}>
+      <Container maxWidth="md" sx={{ pt: 4, pb: 8 }}>
+        <Stack spacing={4}>
           {posts.map((post) => (
             <Card
               key={post.id}
               sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.03)",
-                backgroundImage: "none",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
+                backgroundColor: "rgba(255, 255, 255, 0.02)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "20px",
                 color: "#fff",
+                overflow: "hidden",
+                transition: "0.3s",
+                "&:hover": { borderColor: "rgba(255, 255, 255, 0.15)" },
               }}
             >
               <CardHeader
                 avatar={
-                  <Avatar sx={{ bgcolor: "primary.main", fontSize: "1rem" }}>
+                  <Avatar
+                    sx={{ bgcolor: "secondary.main", width: 42, height: 42 }}
+                  >
                     {post.user?.name?.[0] || "U"}
                   </Avatar>
                 }
                 action={
-                  <IconButton sx={{ color: "rgba(255,255,255,0.5)" }}>
+                  <IconButton sx={{ color: "rgba(255,255,255,0.3)" }}>
                     <MoreVertIcon />
                   </IconButton>
                 }
                 title={
-                  <Typography fontWeight="bold">
+                  <Typography variant="subtitle1" fontWeight="700">
                     {post.user?.name || "Usuário"}
                   </Typography>
                 }
                 subheader={
-                  <Typography variant="caption" color="rgba(255,255,255,0.5)">
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "primary.light", opacity: 0.8 }}
+                  >
                     {post.title}
                   </Typography>
                 }
               />
 
-              <CardContent sx={{ pt: 0 }}>
-                <Typography variant="body2" color="rgba(255, 255, 255, 0.8)">
+              <CardContent sx={{ pt: 0, pb: 2 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ color: "rgba(255, 255, 255, 0.85)", lineHeight: 1.6 }}
+                >
                   {post.contentText}
                 </Typography>
               </CardContent>
 
-              <CardActions
-                sx={{ borderTop: "1px solid rgba(255,255,255,0.05)", px: 2 }}
-              >
-                <IconButton
-                  size="small"
-                  sx={{ color: "rgba(0, 183, 255, 0.6)" }}
-                >
-                  <FavoriteBorderIcon fontSize="small" />
-                </IconButton>
-
-                <IconButton
-                  size="small"
-                  sx={{ color: "rgba(4, 255, 88, 0.6)" }}
-                >
-                  <ChatBubbleOutlineIcon fontSize="small" />
-                </IconButton>
+              {post.contentImageUrl ? (
+                <CardMedia
+                  component="img"
+                  image={post.contentImageUrl}
+                  alt={post.title}
+                  sx={{ width: "100%", maxHeight: "500px", objectFit: "cover" }}
+                />
+              ) : (
+                post.contentImage && (
+                  <CardMedia
+                    component="img"
+                    image={`http://localhost:3333/uploads/${post.contentImage}`}
+                    alt={post.title}
+                  />
+                )
+              )}
+              <CardActions sx={{ px: 2, py: 1.5, gap: 1 }}>
+                {/* Botões de Interação (Like/Chat) aqui... */}
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <IconButton
+                    size="small"
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.5)",
+                      "&:hover": { color: "#ff4b4b" },
+                    }}
+                  >
+                    <FavoriteBorderIcon fontSize="small" />
+                  </IconButton>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "rgba(255,255,255,0.5)" }}
+                  >
+                    0
+                  </Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <IconButton
+                    size="small"
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.5)",
+                      "&:hover": { color: "#4bcaff" },
+                    }}
+                  >
+                    <ChatBubbleOutlineIcon fontSize="small" />
+                  </IconButton>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "rgba(255,255,255,0.5)" }}
+                  >
+                    0
+                  </Typography>
+                </Stack>
               </CardActions>
             </Card>
           ))}

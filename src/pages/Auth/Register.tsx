@@ -19,20 +19,27 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function registerUser(e: React.FormEvent) {
-    e.preventDefault();
-    try {
-      if (!name || !email || !password) {
-        return alert("Todos os campos são obrigatórios");
-      }
-      await register(name, email, password);
-      console.log(registerUser);
-      console.log(register);
-      navigate("/home");
-    } catch (error) {
-      console.log("❌ Erro ao registrar:", error);
+async function registerUser(e: React.FormEvent) {
+  e.preventDefault();
+  try {
+    if (!name || !email || !password) {
+      return alert("Todos os campos são obrigatórios");
     }
+
+    const data = await register(name, email, password);
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userId", data.user.id);
+    localStorage.setItem("userName", data.user.name);
+
+    console.log("TOKEN SALVO:", data.token);
+
+    navigate("/home");
+  } catch (error) {
+    console.log("❌ Erro ao registrar:", error);
   }
+}
+
 
   return (
     <AuthLayout>

@@ -7,19 +7,19 @@ export interface Post {
   id: string;
   title: string;
   contentText: string;
-  contentImage?: string | null;
+  contentImage: string | null;     
+  contentImageUrl?: string | null; 
   userId: string;
-  createdAt: string;
-  user: User; 
-}
+  user?: {
+    name: string;
+    id: string;
+  };
+  createdAt?: string;
 
+}
 export type CreatePost = {
-  title?: string;          // opcional
+  title?: string;          
   contentText: string;
   contentImage?: string | null;
 };
 
-export interface PostModalProps {
-  open: boolean;
-  onClose: () => void;
-}

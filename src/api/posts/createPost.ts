@@ -1,16 +1,14 @@
 import { api } from "../conection";
-import { type CreatePost, type Post } from "../types/post";
 
-export async function createPosts(data: CreatePost) {
-   try {
-      const token = localStorage.getItem("token")
-      const response = await api.post("api/post", data, {
-         headers: {
-            Authorization: `Bearer ${token}`,
-         },
-      })
-      return response.data;
-   } catch (error) {
-      console.log(error)
+export const createPosts = async (postData: any) => {
+   const formData = new FormData();
+   formData.append("title", postData.title);
+   formData.append("contentText", postData.contentText);
+
+   if (postData.contentImage) {
+      formData.append("contentImage", postData.contentImage);
    }
-}
+
+   const response = await api.post("/posts", formData);
+   return response.data;
+};
