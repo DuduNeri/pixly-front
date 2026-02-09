@@ -9,11 +9,7 @@ import {
 import { X, ImagePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPosts } from "../api/posts/createPost";
-
-interface PostModalProps {
-  open: boolean;
-  onClose: () => void;
-}
+import { PostModalProps } from "../api/types/post";
 
 const PostModal = ({ open, onClose }: PostModalProps) => {
   const [contentText, setContentText] = useState("");
@@ -49,9 +45,8 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
 
    useEffect(() => {
       if (posted) {
-        onClose(); // fecha modal
+        onClose(); 
 
-        // resetar campos
         setTitle("");
         setContentText("");
         setImage(null);

@@ -13,10 +13,13 @@ export interface Post {
   user: User; 
 }
 
-// src/types/post.ts
 export type CreatePost = {
   title?: string;          // opcional
   contentText: string;
   contentImage?: string | null;
 };
 
+export interface PostModalProps {
+  open: boolean;
+  onClose: () => void;
+}
