@@ -3,6 +3,7 @@ import Login from "../pages/Auth/Login";
 import { Home } from "../pages/Home";
 import PrivateRoute from "./PrivateRoute";
 import Register from "../pages/Auth/Register";
+import { Profile } from "../pages/Profile";
 
 export default function AppRoutes() {
   return (
@@ -18,6 +19,14 @@ export default function AppRoutes() {
         element={
           <PrivateRoute>
             <Home />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />
