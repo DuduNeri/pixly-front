@@ -23,3 +23,14 @@ export type CreatePost = {
   contentImage?: string | null;
 };
 
+export interface IPosts {
+  id: string;
+  title?: string;
+  contentText?: string | null;
+  contentImage?: string | null;
+  contentImageUrl?: string | null;
+  comments: string[];
+  userId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

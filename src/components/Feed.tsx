@@ -16,26 +16,43 @@ import {
 import { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import PostModal from "./Modal";
-import { getPosts } from "../api/posts/searchPosts";
+import PostModal from "./Layout/Modal";
+import { getPosts } from "../api/posts/Posts";
 import type { Post } from "../api/types/post";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import { ExcludeModal } from "./Layout/ExcludeModal";
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
 
+  const handleOpenDelete = (id: string) => {
+    setSelectedPostId(id);
+    setIsExcludeModalOpen(true);
+  };
+  
+  const handlePostDeleted = () => {
+    setPosts((prev) => prev.filter((p) => p.id !== selectedPostId));
+  };
+
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchPosts() {
       try {
         const data = await getPosts();
-        setPosts(data);
+        if (isMounted) setPosts(data);
       } catch (error) {
-        console.log("Erro ao buscar posts:", error);
+        console.error("Erro ao buscar posts:", error);
       }
     }
     fetchPosts();
+    return () => {
+      isMounted = false;
+    }; 
   }, [isModalOpen]);
 
   return (
@@ -49,7 +66,6 @@ export const Feed = () => {
         alignItems: "center",
       }}
     >
-      {/* HEADER FIXO */}
       <Box
         sx={{
           width: "100%",
@@ -124,9 +140,18 @@ export const Feed = () => {
                     {post.user?.name?.[0] || "U"}
                   </Avatar>
                 }
+                /* Options */
                 action={
-                  <IconButton sx={{ color: "rgba(255,255,255,0.3)" }}>
-                    <MoreVertIcon />
+                  <IconButton
+                    sx={{
+                      color: "var(--accent-purple)",
+                      transition: "0.5s ease",
+                      "&:hover": { color: "var(--accent-pink)" },
+                    }}
+                  >
+                    <DeleteSweepIcon
+                      onClick={() => handleOpenDelete(post.id)}
+                    />
                   </IconButton>
                 }
                 title={
@@ -137,7 +162,15 @@ export const Feed = () => {
                 subheader={
                   <Typography
                     variant="caption"
-                    sx={{ color: "primary.light", opacity: 0.8 }}
+                    sx={{
+                      color: "primary.light",
+                      opacity: 0.8,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 1,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
                   >
                     {post.title}
                   </Typography>
@@ -152,25 +185,26 @@ export const Feed = () => {
                   {post.contentText}
                 </Typography>
               </CardContent>
-
-              {post.contentImageUrl ? (
+              {(post.contentImageUrl || post.contentImage) && (
                 <CardMedia
                   component="img"
-                  image={post.contentImageUrl}
+                  image={
+                    post.contentImageUrl
+                      ? post.contentImageUrl
+                      : `http://localhost:3333/uploads/${post.contentImage}`
+                  }
                   alt={post.title}
-                  sx={{ width: "100%", maxHeight: "500px", objectFit: "cover" }}
+                  sx={{
+                    width: "100%",
+                    maxHeight: "600px",
+                    objectFit: "contain",
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                    display: "block",
+                  }}
                 />
-              ) : (
-                post.contentImage && (
-                  <CardMedia
-                    component="img"
-                    image={`http://localhost:3333/uploads/${post.contentImage}`}
-                    alt={post.title}
-                  />
-                )
               )}
               <CardActions sx={{ px: 2, py: 1.5, gap: 1 }}>
-                {/* Botões de Interação (Like/Chat) aqui... */}
+                {/* Botões de Interação */}
                 <Stack direction="row" alignItems="center" spacing={0.5}>
                   <IconButton
                     size="small"
@@ -211,6 +245,12 @@ export const Feed = () => {
         </Stack>
       </Container>
       <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ExcludeModal
+        open={isExcludeModalOpen}
+        onClose={() => setIsExcludeModalOpen(false)}
+        postId={selectedPostId}
+        onDeleted={handlePostDeleted}
+      />
     </Box>
   );
 };

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { X, ImagePlus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { createPosts } from "../api/posts/createPost";
+import { createPosts } from "../../api/posts/Posts";
 
 export interface PostModalProps {
   open: boolean;
