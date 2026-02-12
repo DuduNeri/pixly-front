@@ -12,6 +12,7 @@ import {
   Divider,
   CardMedia,
   Button,
+  colors,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -22,18 +23,28 @@ import type { Post } from "../api/types/post";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import { ExcludeModal } from "./Layout/ExcludeModal";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
+import HomeIcon from "@mui/icons-material/Home";
+import { useNavigate } from "react-router-dom";
+import { SettingsModal } from "../pages/ModalSettings/Settings";
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+   const [open, setOpen] = useState(false);
+
+   const handleOpen = () => setOpen(true);
+   const handleClose = () => setOpen(false);
+  const navigate = useNavigate();
 
   const handleOpenDelete = (id: string) => {
     setSelectedPostId(id);
     setIsExcludeModalOpen(true);
   };
-  
+
   const handlePostDeleted = () => {
     setPosts((prev) => prev.filter((p) => p.id !== selectedPostId));
   };
@@ -52,8 +63,20 @@ export const Feed = () => {
     fetchPosts();
     return () => {
       isMounted = false;
-    }; 
+    };
   }, [isModalOpen]);
+
+  const pinkButtonStyle = {
+    borderRadius: "10px",
+    textTransform: "none",
+    color: "var(--accent-pink)",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    "&:hover": {
+      transform: "translateY(-2px)",
+      filter: "brightness(1.1)",
+      boxShadow: "0 6px 20px rgba(255, 20, 147, 0.3)",
+    },
+  };
 
   return (
     <Box
@@ -94,6 +117,7 @@ export const Feed = () => {
             {" "}
             Pixly{" "}
           </Typography>
+
           <Button
             variant="contained"
             startIcon={<AddPhotoAlternateIcon />}
@@ -112,7 +136,19 @@ export const Feed = () => {
               },
             }}
           >
-            Criar post
+            Criar
+          </Button>
+
+          <Button onClick={() => navigate("/home")} sx={pinkButtonStyle}>
+            <HomeIcon />
+          </Button>
+
+          <Button onClick={() => navigate("/profile")} sx={pinkButtonStyle}>
+            <AccountBoxIcon />
+          </Button>
+
+          <Button onClick={handleOpen} sx={pinkButtonStyle}>
+            <PermDataSettingIcon />
           </Button>
         </Container>
       </Box>
@@ -251,6 +287,7 @@ export const Feed = () => {
         postId={selectedPostId}
         onDeleted={handlePostDeleted}
       />
+      <SettingsModal open={open} handleClose={handleClose} />
     </Box>
   );
 };
