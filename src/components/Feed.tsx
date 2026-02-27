@@ -51,7 +51,7 @@ export const Feed = () => {
 
   useEffect(() => {
     let isMounted = true;
-
+    
     async function fetchPosts() {
       try {
         const data = await getPosts();

@@ -119,7 +119,6 @@ export const Profile = () => {
               border: "3px solid #0a0a0a",
               boxShadow: "0px 0px 30px rgba(63, 81, 181, 0.3)",
             }}
-            src="https://i.pravatar.cc/150?img=11"
           />
           <Typography
             variant="h4"
