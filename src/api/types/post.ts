@@ -3,6 +3,16 @@ export interface User {
   name: string;
 }
 
+export interface PostAttributes {
+  id: string;
+  title?: string;
+  contentText?: string | null;
+  contentImage?: string | null;
+  comments: string[];
+  userId: string;
+}
+
+
 export interface Post {
   id: string;
   title: string;
