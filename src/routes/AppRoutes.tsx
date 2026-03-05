@@ -1,9 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
-import {Home} from "../pages/Home";
-import {Profile} from "../pages/Profile";
+import { Home } from "../pages/Home";
+import { Profile } from "../pages/Profile";
 import PrivateRoute from "./PrivateRoute";
+import { SearchUsers } from "../pages/SeacrhUsers";
 
 export default function AppRoutes() {
   return (
@@ -18,6 +19,15 @@ export default function AppRoutes() {
         element={
           <PrivateRoute>
             <Home />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/search"
+        element={
+          <PrivateRoute>
+            <SearchUsers />
           </PrivateRoute>
         }
       />

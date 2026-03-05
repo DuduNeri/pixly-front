@@ -9,10 +9,8 @@ import {
   CardHeader,
   CardContent,
   CardActions,
-  Divider,
   CardMedia,
   Button,
-  colors,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -21,37 +19,19 @@ import PostModal from "./Layout/Modal";
 import { getPosts } from "../api/posts/Posts";
 import type { Post } from "../api/types/post";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
-import { ExcludeModal } from "./Layout/ExcludeModal";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
-import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
-import { SettingsModal } from "../pages/ModalSettings/Settings";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-   const [open, setOpen] = useState(false);
 
-   const handleOpen = () => setOpen(true);
-   const handleClose = () => setOpen(false);
   const navigate = useNavigate();
-
-  const handleOpenDelete = (id: string) => {
-    setSelectedPostId(id);
-    setIsExcludeModalOpen(true);
-  };
-
-  const handlePostDeleted = () => {
-    setPosts((prev) => prev.filter((p) => p.id !== selectedPostId));
-  };
 
   useEffect(() => {
     let isMounted = true;
-    
+
     async function fetchPosts() {
       try {
         const data = await getPosts();
@@ -110,7 +90,7 @@ export const Feed = () => {
           }}
         >
           <Typography
-            variant="h6"
+            variant="h4"
             fontWeight="900"
             sx={{ color: "#fff", letterSpacing: -1 }}
           >
@@ -138,17 +118,11 @@ export const Feed = () => {
           >
             Criar
           </Button>
-
-          <Button onClick={() => navigate("/home")} sx={pinkButtonStyle}>
-            <HomeIcon />
-          </Button>
-
           <Button onClick={() => navigate("/profile")} sx={pinkButtonStyle}>
             <AccountBoxIcon />
           </Button>
-
-          <Button onClick={handleOpen} sx={pinkButtonStyle}>
-            <PermDataSettingIcon />
+          <Button onClick={() => navigate("/search")} sx={pinkButtonStyle}>
+            <PersonSearchIcon />
           </Button>
         </Container>
       </Box>
@@ -184,11 +158,7 @@ export const Feed = () => {
                       transition: "0.5s ease",
                       "&:hover": { color: "var(--accent-pink)" },
                     }}
-                  >
-                    <DeleteSweepIcon
-                      onClick={() => handleOpenDelete(post.id)}
-                    />
-                  </IconButton>
+                  ></IconButton>
                 }
                 title={
                   <Typography variant="subtitle1" fontWeight="700">
@@ -281,13 +251,6 @@ export const Feed = () => {
         </Stack>
       </Container>
       <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <ExcludeModal
-        open={isExcludeModalOpen}
-        onClose={() => setIsExcludeModalOpen(false)}
-        postId={selectedPostId}
-        onDeleted={handlePostDeleted}
-      />
-      <SettingsModal open={open} handleClose={handleClose} />
     </Box>
   );
 };
