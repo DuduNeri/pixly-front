@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 
 export const SearchUsers = () => {
   const [users, setUsers] = useState<IUserResponse[]>([]);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,9 +72,9 @@ export const SearchUsers = () => {
           <ArrowBackIcon />
         </Button>
         <Typography variant="h5" sx={{ mb: 5, mt: 3, fontWeight: "bold" }}>
-          Buscar Usuários
+          Usuários ativos
         </Typography>
-
+        {/* 
         <TextField
           fullWidth
           placeholder="Procure por nome ou @username..."
@@ -96,7 +96,7 @@ export const SearchUsers = () => {
               "&.Mui-focused fieldset": { borderColor: "#90caf9" },
             },
           }}
-        />
+        /> */}
 
         {/* Lista de Resultados */}
         <List sx={{ mt: 2 }}>

@@ -97,6 +97,8 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
           >
             <Typography variant="h6" sx={{ color: "#fff", fontWeight: 800, fontSize: "1.1rem" }}>
               Nova publicação
+            </Typography> <Typography variant="h6" sx={{ color: "#fff", fontWeight: 800, fontSize: "1.1rem" }}>
+              Nova publicação
             </Typography>
             <IconButton 
               onClick={onClose}
