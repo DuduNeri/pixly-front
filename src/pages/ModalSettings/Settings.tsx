@@ -18,7 +18,7 @@ export const SettingsModal = ({ open, handleClose }: SettingsModalProps) => {
     "&:hover": {
       transform: "translateY(-2px)",
       filter: "brightness(1.1)",
-      boxShadow: "0 6px 20px rgba(255, 20, 147, 0.3)",
+      boxShadow: "0 6px 20px #1f2937",
     },
   };
 

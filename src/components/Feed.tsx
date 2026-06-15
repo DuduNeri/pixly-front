@@ -54,7 +54,7 @@ export const Feed = () => {
     "&:hover": {
       transform: "translateY(-2px)",
       filter: "brightness(1.1)",
-      boxShadow: "0 6px 20px rgba(255, 20, 147, 0.3)",
+      boxShadow: "0 6px 20px #1f2937",
     },
   };
 
@@ -112,7 +112,7 @@ export const Feed = () => {
                 transform: "translateY(-2px)",
                 background: "var(--accent-pink)",
                 filter: "brightness(1.1)",
-                boxShadow: "0 6px 20px rgba(255, 20, 147, 0.3)",
+                boxShadow: "0 6px 20px #1f2937",
               },
             }}
           >
@@ -145,39 +145,25 @@ export const Feed = () => {
               <CardHeader
                 avatar={
                   <Avatar
+                    src={
+                      post.user?.avatar
+                        ? `http://localhost:3333/uploads/${post.user.avatar}`
+                        : undefined
+                    }
                     sx={{ bgcolor: "secondary.main", width: 42, height: 42 }}
                   >
+                    {/* Se o usuário não tiver foto, ele mostra a primeira letra do nome */}
                     {post.user?.name?.[0] || "U"}
                   </Avatar>
                 }
-                /* Options */
-                action={
-                  <IconButton
-                    sx={{
-                      color: "var(--accent-purple)",
-                      transition: "0.5s ease",
-                      "&:hover": { color: "var(--accent-pink)" },
-                    }}
-                  ></IconButton>
-                }
+                /* O restante do código do CardHeader continua igual... */
                 title={
                   <Typography variant="subtitle1" fontWeight="700">
                     {post.user?.name || "Usuário"}
                   </Typography>
                 }
                 subheader={
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "primary.light",
-                      opacity: 0.8,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 1,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
+                  <Typography variant="caption" sx={{ color: "primary.light", opacity: 0.8 }}>
                     {post.title}
                   </Typography>
                 }
@@ -216,7 +202,7 @@ export const Feed = () => {
                     size="small"
                     sx={{
                       color: "rgba(255, 255, 255, 0.5)",
-                      "&:hover": { color: "#ff4b4b" },
+                      "&:hover": { color: "#1f2937" },
                     }}
                   >
                     <FavoriteBorderIcon fontSize="small" />

@@ -22,13 +22,20 @@ import { ExcludeModal } from "./Layouts/ExcludeModal";
 import { getPostsByUser } from "../api/posts/Posts";
 import type { Post } from "../api/types/post";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import AvatarModal from "../components/Layout/Avatar";
 
 export const Profile = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [avatar, setAvatar] = useState(
+    localStorage.getItem("avatar") || ""
+  );
   const [openSettings, setOpenSettings] = useState(false);
   const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+
+  const userId = localStorage.getItem("userId") || "";
 
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
@@ -44,12 +51,14 @@ export const Profile = () => {
     setSelectedPostId(null);
   }, [selectedPostId]);
 
-  const userName = posts[0]?.user?.name;
+  const userName = localStorage.getItem("userName")
+  console.log(userName)
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const userId = localStorage.getItem("userId");
+        console.log(userId)
         if (!userId) return;
 
         const data = await getPostsByUser(userId);
@@ -60,19 +69,19 @@ export const Profile = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [isModalOpen]);
 
   const pinkButtonStyle = {
     borderRadius: "10px",
     textTransform: "none",
-    color: "var(--accent-pink, #ff1493)",
+    color: "var( #1f2937)",
     minWidth: "auto",
     padding: { xs: "8px", sm: "12px" },
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     "&:hover": {
       transform: "translateY(-2px)",
       filter: "brightness(1.1)",
-      boxShadow: "0 6px 20px rgba(255, 20, 147, 0.3)",
+      boxShadow: "0 6px 20px #1f2937",
     },
   };
 
@@ -118,9 +127,7 @@ export const Profile = () => {
             <Button onClick={() => navigate("/search")} sx={pinkButtonStyle}>
               <PersonSearchIcon />
             </Button>
-            {/* <Button onClick={() => navigate("/profile")} sx={pinkButtonStyle}>
-              <AccountBoxIcon />
-            </Button> */}
+    
             <Button onClick={handleOpenSettings} sx={pinkButtonStyle}>
               <PermDataSettingIcon />
             </Button>
@@ -142,12 +149,24 @@ export const Profile = () => {
           }}
         >
           <Avatar
+            src={
+              avatar
+                ? `http://localhost:3333/uploads/${avatar}`
+                : undefined
+            }
+            onClick={() => setIsModalOpen(true)}
+            userId={userId}
             sx={{
               width: { xs: 100, md: 140 },
               height: { xs: 100, md: 140 },
               mb: 3,
+              cursor: "pointer",
               border: "3px solid #0a0a0a",
-              boxShadow: "0px 0px 30px rgba(255, 20, 147, 0.2)",
+              boxShadow: "0 8px 20px rgba(31,41,55,0.4)",
+              transition: "all .3s ease",
+              "&:hover": {
+                transform: "scale(1.05)",
+              },
             }}
           />
 
@@ -215,8 +234,8 @@ export const Profile = () => {
                         onClick={() => handleOpenDelete(post.id)}
                         size="small"
                         sx={{
-                          color: "rgba(255, 0, 0, 0.3)",
-                          "&:hover": { color: "#ff4444" },
+                          color: "#1f2937",
+                          "&:hover": { color: "#1f2937" },
                         }}
                       >
                         <DeleteSweepIcon fontSize="small" />
@@ -257,12 +276,17 @@ export const Profile = () => {
         )}
       </Container>
 
-      {/* Modais - Sem alterações */}
       <ExcludeModal
         open={isExcludeModalOpen}
         onClose={() => setIsExcludeModalOpen(false)}
         postId={selectedPostId}
         onDeleted={handlePostDeleted}
+      />
+      <AvatarModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        userId={localStorage.getItem("userId") || ""}
+        onAvatarUpdated={(newAvatar) => setAvatar(newAvatar)} 
       />
       <SettingsModal open={openSettings} handleClose={handleCloseSettings} />
     </Box>

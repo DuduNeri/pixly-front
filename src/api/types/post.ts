@@ -23,6 +23,7 @@ export interface Post {
   user?: {
     name: string;
     id: string;
+    avatar: string;
   };
   createdAt?: string;
 
@@ -43,4 +44,9 @@ export interface IPosts {
   userId: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface UpdatePhoto {
+  userId: string;
+  avatar: string;
 }

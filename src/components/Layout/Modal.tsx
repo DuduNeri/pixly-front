@@ -97,9 +97,7 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
           >
             <Typography variant="h6" sx={{ color: "#fff", fontWeight: 800, fontSize: "1.1rem" }}>
               Nova publicação
-            </Typography> <Typography variant="h6" sx={{ color: "#fff", fontWeight: 800, fontSize: "1.1rem" }}>
-              Nova publicação
-            </Typography>
+            </Typography> 
             <IconButton 
               onClick={onClose}
               sx={{ color: "rgba(255,255,255,0.3)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,0.05)" } }}
@@ -226,11 +224,11 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
                 textTransform: "none",
                 fontWeight: 800,
                 fontSize: "1rem",
-                background: "var(--accent-pink, #ff1493)",
-                boxShadow: "0 8px 20px rgba(255, 20, 147, 0.3)",
+                background: "var(--accent-pink, #1f2937)",
+                boxShadow: "0 8px 20px #1f2937",
                 transition: "all 0.3s ease",
                 "&:hover": {
-                  background: "var(--accent-pink, #ff1493)",
+                  background: "var(--accent-pink, #1f2937)",
                   filter: "brightness(1.1)",
                   transform: "translateY(-2px)",
                 },
