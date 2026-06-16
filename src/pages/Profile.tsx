@@ -27,12 +27,10 @@ import AvatarModal from "../components/Layout/Avatar";
 export const Profile = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [avatar, setAvatar] = useState(
-    localStorage.getItem("avatar") || ""
-  );
   const [openSettings, setOpenSettings] = useState(false);
   const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string>("");
   const [posts, setPosts] = useState<Post[]>([]);
 
   const userId = localStorage.getItem("userId") || "";
@@ -70,6 +68,22 @@ export const Profile = () => {
 
     fetchPosts();
   }, [isModalOpen]);
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      try {
+        if (!userId) return;
+
+        const data = await getAvatar(userId);
+
+        setAvatar(data.avatar);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAvatar();
+  }, [userId]);
 
   const pinkButtonStyle = {
     borderRadius: "10px",
