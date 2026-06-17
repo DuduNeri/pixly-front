@@ -11,3 +11,12 @@ export async function getUsers() {
   }
 }
 
+export async function getUser(userId: string) {
+  try {
+    const response = await api.get(`/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.log("Erro ao buscar usuário:", error);
+    throw error;
+  }
+}

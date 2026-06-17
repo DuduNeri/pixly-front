@@ -40,16 +40,25 @@ const AvatarModal = ({
         if (!image) return;
 
         try {
-            const response = await updateAvatar(userId, image);
+            // CORREÇÃO: Passa o arquivo 'image' (que é um objeto File) puro.
+            // A sua API se encarrega de criar o FormData lá dentro!
+            const response = await updateAvatar(image);
 
-            if (response && response.avatar) {
-                localStorage.setItem("avatar", response.avatar);
-                onAvatarUpdated(response.avatar); 
+            console.log("Resposta da API:", response);
+
+            // Captura o nome da imagem retornada pelo backend
+            // Ajuste o caminho dependendo se os dados vêm direto ou dentro de .data
+            const newAvatarName = response?.data?.avatar || response?.avatar;
+
+            if (newAvatarName) {
+                onAvatarUpdated(newAvatarName);
             }
 
+            // Fecha o modal e limpa os estados
             setUploaded(true);
+
         } catch (error) {
-            console.error("Erro ao atualizar avatar:", error);
+            console.error("Erro ao salvar o avatar:", error);
         }
     };
 

@@ -10,7 +10,6 @@ import {
   Tooltip,
   Grid,
 } from "@mui/material";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import HomeIcon from "@mui/icons-material/Home";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
@@ -23,17 +22,20 @@ import { getPostsByUser } from "../api/posts/Posts";
 import type { Post } from "../api/types/post";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import AvatarModal from "../components/Layout/Avatar";
+import { getUser } from "../api/users/users";
 
 export const Profile = () => {
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [avatarVersion, setAvatarVersion] = useState(0);
   const [avatar, setAvatar] = useState<string>("");
   const [posts, setPosts] = useState<Post[]>([]);
 
   const userId = localStorage.getItem("userId") || "";
+  const userName = localStorage.getItem("userName");
 
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
@@ -49,16 +51,11 @@ export const Profile = () => {
     setSelectedPostId(null);
   }, [selectedPostId]);
 
-  const userName = localStorage.getItem("userName")
-  console.log(userName)
-
+  // Busca os posts apenas quando o componente monta ou o userId muda
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        console.log(userId)
         if (!userId) return;
-
         const data = await getPostsByUser(userId);
         setPosts(data);
       } catch (error) {
@@ -67,28 +64,30 @@ export const Profile = () => {
     };
 
     fetchPosts();
-  }, [isModalOpen]);
-
-  useEffect(() => {
-    const fetchAvatar = async () => {
-      try {
-        if (!userId) return;
-
-        const data = await getAvatar(userId);
-
-        setAvatar(data.avatar);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchAvatar();
   }, [userId]);
+
+  // Função isolada para buscar os dados do usuário (reutilizável)
+  const fetchUser = useCallback(async () => {
+    try {
+      if (!userId) return;
+      const user = await getUser(userId);
+      if (user && user.avatar) {
+        setAvatar(user.avatar);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar usuário:", error);
+    }
+  }, [userId]);
+
+  // Busca inicial do usuário
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const pinkButtonStyle = {
     borderRadius: "10px",
     textTransform: "none",
-    color: "var( #1f2937)",
+    color: "#1f2937",
     minWidth: "auto",
     padding: { xs: "8px", sm: "12px" },
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -111,7 +110,7 @@ export const Profile = () => {
         alignItems: "center",
       }}
     >
-      {/* Header Sticky - Sem alterações */}
+      {/* Header Sticky */}
       <Box
         sx={{
           width: "100%",
@@ -141,7 +140,6 @@ export const Profile = () => {
             <Button onClick={() => navigate("/search")} sx={pinkButtonStyle}>
               <PersonSearchIcon />
             </Button>
-    
             <Button onClick={handleOpenSettings} sx={pinkButtonStyle}>
               <PermDataSettingIcon />
             </Button>
@@ -163,13 +161,13 @@ export const Profile = () => {
           }}
         >
           <Avatar
+            // O segredo está aqui: o v=${avatarVersion} força o navegador a quebrar o cache da imagem antiga
             src={
               avatar
-                ? `http://localhost:3333/uploads/${avatar}`
+                ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}`
                 : undefined
             }
             onClick={() => setIsModalOpen(true)}
-            userId={userId}
             sx={{
               width: { xs: 100, md: 140 },
               height: { xs: 100, md: 140 },
@@ -190,7 +188,7 @@ export const Profile = () => {
             sx={{
               fontSize: { xs: "1.8rem", md: "2.125rem" },
               background:
-                "linear-gradient(90deg, var(--accent-purple), var(--accent-color))",
+                "linear-gradient(90deg, var(--accent-purple, #a855f7), var(--accent-color, #db2777))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -202,15 +200,21 @@ export const Profile = () => {
 
         <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 4 }} />
 
-        {/* Grid */}
+        {/* Grid de Posts */}
         {posts.length === 0 ? (
           <Typography textAlign="center" color="gray" sx={{ mt: 4 }}>
             Nenhum post ainda.
           </Typography>
         ) : (
-          <Grid container spacing={15}>
+          <Grid container spacing={3}>
+            {/* CORREÇÃO: Reduzido de 15 para 3. O valor 15 quebrava o layout criando um espaçamento gigante de 120px */}
             {posts.map((post) => (
-              <Grid item xs={12} sm={6} md={4} key={post.id}>
+              <Grid size={{
+                xs: 12,
+                sm: 6,
+                md: 4,
+              }}
+                key={post.id}>
                 <Box
                   sx={{
                     height: "100%",
@@ -248,8 +252,8 @@ export const Profile = () => {
                         onClick={() => handleOpenDelete(post.id)}
                         size="small"
                         sx={{
-                          color: "#1f2937",
-                          "&:hover": { color: "#1f2937" },
+                          color: "#6b7280",
+                          "&:hover": { color: "#ef4444" },
                         }}
                       >
                         <DeleteSweepIcon fontSize="small" />
@@ -290,18 +294,26 @@ export const Profile = () => {
         )}
       </Container>
 
+      {/* Modais */}
       <ExcludeModal
         open={isExcludeModalOpen}
         onClose={() => setIsExcludeModalOpen(false)}
         postId={selectedPostId}
         onDeleted={handlePostDeleted}
       />
+
       <AvatarModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        userId={localStorage.getItem("userId") || ""}
-        onAvatarUpdated={(newAvatar) => setAvatar(newAvatar)} 
+        userId={userId}
+        onAvatarUpdated={(newAvatar) => {
+          // Garante a re-renderização imediata atualizando os estados locais
+          setAvatar(newAvatar);
+          setAvatarVersion((prev) => prev + 1);
+          fetchUser();
+        }}
       />
+
       <SettingsModal open={openSettings} handleClose={handleCloseSettings} />
     </Box>
   );
