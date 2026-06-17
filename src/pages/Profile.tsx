@@ -13,6 +13,7 @@ import {
 import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import HomeIcon from "@mui/icons-material/Home";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 
@@ -31,7 +32,7 @@ export const Profile = () => {
   const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [avatarVersion, setAvatarVersion] = useState(0);
-  const [avatar, setAvatar] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>(" ");
   const [posts, setPosts] = useState<Post[]>([]);
 
   const userId = localStorage.getItem("userId") || "";
@@ -51,22 +52,20 @@ export const Profile = () => {
     setSelectedPostId(null);
   }, [selectedPostId]);
 
-  // Busca os posts apenas quando o componente monta ou o userId muda
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        if (!userId) return;
-        const data = await getPostsByUser(userId);
-        setPosts(data);
-      } catch (error) {
-        console.error("Erro ao buscar posts:", error);
-      }
-    };
-
-    fetchPosts();
+  const fetchPosts = useCallback(async () => {
+    try {
+      if (!userId) return;
+      const data = await getPostsByUser(userId);
+      setPosts(data);
+    } catch (error) {
+      console.error("Erro ao buscar posts:", error);
+    }
   }, [userId]);
 
-  // Função isolada para buscar os dados do usuário (reutilizável)
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
+
   const fetchUser = useCallback(async () => {
     try {
       if (!userId) return;
@@ -79,22 +78,46 @@ export const Profile = () => {
     }
   }, [userId]);
 
-  // Busca inicial do usuário
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
 
-  const pinkButtonStyle = {
-    borderRadius: "10px",
+  // Estilo dos botões de navegação do topo (Mobile)
+  const headerNavButtonStyle = {
+    borderRadius: "14px",
     textTransform: "none",
-    color: "#1f2937",
+    color: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    border: "1px solid rgba(255, 255, 255, 0.05)",
     minWidth: "auto",
-    padding: { xs: "8px", sm: "12px" },
+    padding: { xs: "10px 18px", sm: "12px 24px" },
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    "& :svg": { fontSize: "1.3rem" },
     "&:hover": {
+      color: "#fff",
+      backgroundColor: "rgba(255, 255, 255, 0.08)",
+      borderColor: "rgba(255, 255, 255, 0.2)",
       transform: "translateY(-2px)",
-      filter: "brightness(1.1)",
-      boxShadow: "0 6px 20px #1f2937",
+    },
+  };
+
+  // Estilo dos botões verticais da Sidebar (Desktop)
+  const sidebarButtonStyle = {
+    justify: "flex-start",
+    justifyContent: "flex-start",
+    color: "rgba(255, 255, 255, 0.7)",
+    textTransform: "none",
+    fontWeight: "600",
+    fontSize: "1.05rem",
+    borderRadius: "12px",
+    py: 1.5,
+    px: 2,
+    width: "100%",
+    transition: "all 0.2s",
+    "& .MuiButton-startIcon": { marginRight: 2 },
+    "&:hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      color: "#fff",
     },
   };
 
@@ -102,197 +125,327 @@ export const Profile = () => {
     <Box
       component="main"
       sx={{
-        backgroundColor: "#0a0a0a",
+        backgroundColor: "#050505",
         minHeight: "100vh",
         color: "#fff",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        flexDirection: { xs: "column", md: "row" },
       }}
     >
-      {/* Header Sticky */}
+      {/* 1. BARRA LATERAL (DESKTOP) */}
       <Box
+        component="aside"
         sx={{
+          display: { xs: "none", md: "flex" },
+          flexDirection: "column",
+          width: "280px",
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          borderRight: "1px solid rgba(255, 255, 255, 0.06)",
+          p: 4,
+          flexShrink: 0,
+        }}
+      >
+        <Stack spacing={4} sx={{ width: "100%" }}>
+          <Typography
+            variant="h4"
+            fontWeight="900"
+            sx={{
+              background: "linear-gradient(45deg, #fff, rgba(255,255,255,0.7))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              letterSpacing: -1.5,
+              cursor: "pointer",
+              pl: 1,
+            }}
+            onClick={() => navigate("/home")}
+          >
+            Pixly
+          </Typography>
+
+          <Stack spacing={1} sx={{ width: "100%" }}>
+            <Button
+              startIcon={<HomeIcon />}
+              onClick={() => navigate("/home")}
+              sx={sidebarButtonStyle}
+            >
+              Feed
+            </Button>
+            <Button
+              startIcon={<PersonSearchIcon />}
+              onClick={() => navigate("/search")}
+              sx={sidebarButtonStyle}
+            >
+              Pesquisar
+            </Button>
+            <Button
+              startIcon={<PermDataSettingIcon />}
+              onClick={handleOpenSettings}
+              sx={sidebarButtonStyle}
+            >
+              Configurações
+            </Button>
+            <Button
+              startIcon={<AccountCircleIcon />}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              sx={{
+                ...sidebarButtonStyle,
+                color: "#fff",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+              }}
+            >
+              Perfil
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+
+      {/* 2. BARRA SUPERIOR (MOBILE) */}
+      <Box
+        component="header"
+        sx={{
+          display: { xs: "block", md: "none" },
           width: "100%",
           position: "sticky",
           top: 0,
           zIndex: 10,
-          backdropFilter: "blur(12px)",
-          backgroundColor: "rgba(10, 10, 10, 0.8)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(16px)",
+          backgroundColor: "rgba(5, 5, 5, 0.75)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
         }}
       >
         <Container
           maxWidth="md"
-          sx={{ py: 1, px: 2, display: "flex", justifyContent: "center" }}
+          sx={{ py: 1.5, px: 2, display: "flex", justifyContent: "center" }}
         >
           <Stack
             direction="row"
+            spacing={{ xs: 2, sm: 4 }}
             sx={{
               width: "100%",
               maxWidth: "500px",
-              justifyContent: "space-around",
+              justifyContent: "center",
             }}
           >
-            <Button onClick={() => navigate("/home")} sx={pinkButtonStyle}>
+            <Button onClick={() => navigate("/home")} sx={headerNavButtonStyle}>
               <HomeIcon />
             </Button>
-            <Button onClick={() => navigate("/search")} sx={pinkButtonStyle}>
+            <Button onClick={() => navigate("/search")} sx={headerNavButtonStyle}>
               <PersonSearchIcon />
             </Button>
-            <Button onClick={handleOpenSettings} sx={pinkButtonStyle}>
+            <Button onClick={handleOpenSettings} sx={headerNavButtonStyle}>
               <PermDataSettingIcon />
             </Button>
           </Stack>
         </Container>
       </Box>
 
-      {/* Corpo do Perfil */}
-      <Container
-        maxWidth="lg"
-        sx={{ flexGrow: 1, pt: { xs: 4, md: 6 }, pb: 10 }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            mb: 4,
-          }}
+      {/* 3. CONTEÚDO CENTRAL DO PERFIL */}
+      <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", width: "100%" }}>
+        <Container
+          maxWidth="md"
+          sx={{ pt: { xs: 5, md: 8 }, pb: 10, px: 2 }}
         >
-          <Avatar
-            // O segredo está aqui: o v=${avatarVersion} força o navegador a quebrar o cache da imagem antiga
-            src={
-              avatar
-                ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}`
-                : undefined
-            }
-            onClick={() => setIsModalOpen(true)}
+          {/* Bloco de Informações do Usuário */}
+          <Box
             sx={{
-              width: { xs: 100, md: 140 },
-              height: { xs: 100, md: 140 },
-              mb: 3,
-              cursor: "pointer",
-              border: "3px solid #0a0a0a",
-              boxShadow: "0 8px 20px rgba(31,41,55,0.4)",
-              transition: "all .3s ease",
-              "&:hover": {
-                transform: "scale(1.05)",
-              },
-            }}
-          />
-
-          <Typography
-            variant="h4"
-            fontWeight="800"
-            sx={{
-              fontSize: { xs: "1.8rem", md: "2.125rem" },
-              background:
-                "linear-gradient(90deg, var(--accent-purple, #a855f7), var(--accent-color, #db2777))",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              mb: 6,
+              textAlign: "center",
             }}
           >
-            {userName || "..."}
-          </Typography>
-        </Box>
-
-        <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 4 }} />
-
-        {/* Grid de Posts */}
-        {posts.length === 0 ? (
-          <Typography textAlign="center" color="gray" sx={{ mt: 4 }}>
-            Nenhum post ainda.
-          </Typography>
-        ) : (
-          <Grid container spacing={3}>
-            {/* CORREÇÃO: Reduzido de 15 para 3. O valor 15 quebrava o layout criando um espaçamento gigante de 120px */}
-            {posts.map((post) => (
-              <Grid size={{
-                xs: 12,
-                sm: 6,
-                md: 4,
+            <Box
+              sx={{
+                position: "relative",
+                borderRadius: "50%",
+                padding: "4px",
+                background: "linear-gradient(135deg, var(--accent-purple, #a855f7), var(--accent-color, #db2777))",
+                mb: 2.5,
+                transition: "transform 0.3s ease",
+                "&:hover": {
+                  transform: "scale(1.03)",
+                },
               }}
-                key={post.id}>
-                <Box
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    position: "relative",
-                    backgroundColor: "#111",
-                    borderRadius: "12px",
-                    padding: 2,
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-                    transition: "0.3s",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                    "&:hover": { transform: "translateY(-4px)" },
-                  }}
-                >
+            >
+              <Avatar
+                src={
+                  avatar && avatar.trim() !== ""
+                    ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}`
+                    : undefined
+                }
+                onClick={() => setIsModalOpen(true)}
+                sx={{
+                  width: { xs: 110, md: 140 },
+                  height: { xs: 110, md: 140 },
+                  cursor: "pointer",
+                  border: "4px solid #050505",
+                  backgroundColor: "#111",
+                  fontSize: "2.5rem",
+                  fontWeight: "800",
+                }}
+              >
+                {userName ? userName.charAt(0).toUpperCase() : "?"}
+              </Avatar>
+            </Box>
+
+            <Typography
+              variant="h4"
+              fontWeight="900"
+              sx={{
+                fontSize: { xs: "1.75rem", md: "2.25rem" },
+                letterSpacing: "-0.5px",
+                color: "#fff",
+              }}
+            >
+              {userName || "..."}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "rgba(255, 255, 255, 0.4)", mt: 0.5, fontWeight: 500 }}
+            >
+              @{userName?.toLowerCase().replace(/\s+/g, "") || "usuario"}
+            </Typography>
+          </Box>
+
+          <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", mb: 5 }} />
+
+          {/* Feed de Posts do Usuário */}
+          <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 3, px: 0.5, color: "rgba(255,255,255,0.9)" }}>
+            Suas publicações ({posts.length})
+          </Typography>
+
+          {posts.length === 0 ? (
+            <Typography textAlign="center" color="gray" sx={{ mt: 6, fontSize: "0.95rem" }}>
+              Você ainda não realizou nenhuma publicação.
+            </Typography>
+          ) : (
+            <Grid container spacing={3} alignItems="stretch">
+              {posts.map((post) => (
+                <Grid item xs={12} sm={6} key={post.id} sx={{ display: "flex" }}>
                   <Box
                     sx={{
                       display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      mb: 1,
+                      flexDirection: "column",
+                      backgroundColor: "#0d0d0d",
+                      borderRadius: "18px",
+                      width: "100%",
+                      overflow: "hidden",
+                      border: "1px solid rgba(255,255,255,0.05)",
+                      transition: "border-color 0.2s ease-in-out, transform 0.2s ease-in-out",
+                      "&:hover": {
+                        borderColor: "rgba(255, 255, 255, 0.12)",
+                        transform: "translateY(-4px)"
+                      },
                     }}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight="bold"
-                      noWrap
-                      sx={{ maxWidth: "80%" }}
-                    >
-                      {post.title}
-                    </Typography>
-
-                    <Tooltip title="Excluir post">
-                      <IconButton
-                        onClick={() => handleOpenDelete(post.id)}
-                        size="small"
+                    {/* 1. IMAGEM NO TOPO (Apenas renderiza se existir) */}
+                    {post.contentImage && (
+                      <Box
                         sx={{
-                          color: "#6b7280",
-                          "&:hover": { color: "#ef4444" },
+                          width: "100%",
+                          height: "200px",
+                          backgroundColor: "#050505",
+                          borderBottom: "1px solid rgba(255,255,255,0.03)",
                         }}
                       >
-                        <DeleteSweepIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                        <Box
+                          component="img"
+                          src={`http://localhost:3333/uploads/${post.contentImage}`}
+                          alt={post.title}
+                          sx={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </Box>
+                    )}
+
+                    {/* 2. CONTEÚDO E TEXTOS ABAIXO DA IMAGEM */}
+                    <Box sx={{ p: 2.5, flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                      <Box>
+                        {/* Informações da marca/usuário + Botão de deletar */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 1.5,
+                          }}
+                        >
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <Avatar
+                              src={avatar && avatar.trim() !== "" ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}` : undefined}
+                              sx={{ width: 20, height: 20, fontSize: "0.6rem", fontWeight: "700" }}
+                            >
+                              {userName ? userName.charAt(0).toUpperCase() : "?"}
+                            </Avatar>
+                            <Typography variant="caption" color="rgba(255,255,255,0.4)" fontWeight="600">
+                              {userName || "Sua publicação"}
+                            </Typography>
+                          </Stack>
+
+                          <Tooltip title="Excluir post">
+                            <IconButton
+                              onClick={() => handleOpenDelete(post.id)}
+                              size="small"
+                              sx={{
+                                color: "rgba(255, 255, 255, 0.3)",
+                                padding: "4px",
+                                "&:hover": {
+                                  color: "#ef4444",
+                                  backgroundColor: "rgba(239, 68, 68, 0.08)"
+                                },
+                              }}
+                            >
+                              <DeleteSweepIcon sx={{ fontSize: "1rem" }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+
+                        {/* Título do Card */}
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="700"
+                          color="#fff"
+                          sx={{
+                            lineHeight: 1.3,
+                            mb: 1,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {post.title}
+                        </Typography>
+
+                        {/* Texto complementar do card */}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "rgba(255, 255, 255, 0.5)",
+                            lineHeight: 1.4,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {post.contentText}
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Box>
-
-                  <Typography
-                    variant="body2"
-                    color="gray"
-                    sx={{
-                      whiteSpace: "pre-line",
-                      mb: 2,
-                      flexGrow: 1,
-                    }}
-                  >
-                    {post.contentText}
-                  </Typography>
-
-                  {post.contentImage && (
-                    <Box
-                      component="img"
-                      src={`http://localhost:3333/uploads/${post.contentImage}`}
-                      alt={post.title}
-                      sx={{
-                        width: "100%",
-                        height: "150px",
-                        borderRadius: "8px",
-                        objectFit: "cover",
-                        mt: "auto",
-                      }}
-                    />
-                  )}
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        )}
-      </Container>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Container>
+      </Box>
 
       {/* Modais */}
       <ExcludeModal
@@ -307,7 +460,6 @@ export const Profile = () => {
         onClose={() => setIsModalOpen(false)}
         userId={userId}
         onAvatarUpdated={(newAvatar) => {
-          // Garante a re-renderização imediata atualizando os estados locais
           setAvatar(newAvatar);
           setAvatarVersion((prev) => prev + 1);
           fetchUser();
