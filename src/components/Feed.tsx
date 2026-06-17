@@ -160,13 +160,14 @@ export const Feed = () => {
               textTransform: "none",
               fontWeight: "700",
               fontSize: "1rem",
-              backgroundColor: "#fff",
-              color: "#000",
+              backgroundColor: "#000000",
+              color: "#ffffff",
               py: 1.5,
               boxShadow: "0 4px 14px rgba(255,255,255,0.15)",
               "&:hover": {
-                backgroundColor: "rgba(255,255,255,0.9)",
+                backgroundColor: "rgba(247, 247, 247, 0.9)",
                 boxShadow: "0 6px 20px rgba(255,255,255,0.25)",
+                color: "#000"
               },
             }}
           >
