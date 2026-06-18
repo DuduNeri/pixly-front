@@ -15,7 +15,7 @@ import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import HomeIcon from "@mui/icons-material/Home";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MenuIcon from "@mui/icons-material/Menu"; // Importado para o botão hamburguer
+import MenuIcon from "@mui/icons-material/Menu"; 
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 
@@ -36,7 +36,7 @@ export const Profile = () => {
   const [avatarVersion, setAvatarVersion] = useState(0);
   const [avatar, setAvatar] = useState<string>(" ");
   const [posts, setPosts] = useState<Post[]>([]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Estado do menu mobile
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); 
 
   const userId = localStorage.getItem("userId") || "";
   const userName = localStorage.getItem("userName");
@@ -89,7 +89,6 @@ export const Profile = () => {
     fetchUser();
   }, [fetchUser]);
 
-  // Estilo dos botões verticais da Sidebar (Desktop e Mobile Drawer)
   const sidebarButtonStyle = {
     borderRadius: "14px",
     textTransform: "none",
@@ -108,7 +107,6 @@ export const Profile = () => {
     },
   };
 
-  // Renderizador da lista de links (Reutilizável)
   const renderSidebarNavigation = () => (
     <Stack spacing={1} sx={{ width: "100%" }}>
       <Button
@@ -149,8 +147,12 @@ export const Profile = () => {
         }}
         sx={{
           ...sidebarButtonStyle,
-          color: "#fff",
-          backgroundColor: "rgba(255, 255, 255, 0.05)",
+          backgroundColor: "#ffffff",
+          color: "#000000",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+            color: "#ffffff",
+          },
         }}
       >
         Perfil
@@ -313,36 +315,47 @@ export const Profile = () => {
           >
             <Box
               sx={{
-                position: "relative",
-                borderRadius: "50%",
-                padding: "4px",
-                background: "linear-gradient(135deg, var(--accent-purple, #a855f7), var(--accent-color, #db2777))",
-                mb: 2.5,
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.03)",
-                },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                mb: 6,
+                textAlign: "center",
               }}
             >
-              <Avatar
-                src={
-                  avatar && avatar.trim() !== ""
-                    ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}`
-                    : undefined
-                }
-                onClick={() => setIsModalOpen(true)}
+              <Box
                 sx={{
-                  width: { xs: 110, md: 140 },
-                  height: { xs: 110, md: 140 },
-                  cursor: "pointer",
-                  border: "4px solid #050505",
-                  backgroundColor: "#111",
-                  fontSize: "2.5rem",
-                  fontWeight: "800",
+                  position: "relative",
+                  borderRadius: "50%",
+                  mb: 2.5,
+                  transition: "transform 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.03)",
+                  },
                 }}
               >
-                {userName ? userName.charAt(0).toUpperCase() : "?"}
-              </Avatar>
+                <Avatar
+                  src={
+                    avatar && avatar.trim() !== ""
+                      ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}`
+                      : undefined
+                  }
+                  onClick={() => setIsModalOpen(true)}
+                  sx={{
+                    width: { xs: 110, md: 140 },
+                    height: { xs: 110, md: 140 },
+                    cursor: "pointer",
+                    border: "1px solid #050505",
+                    backgroundColor: "#111",
+                    fontSize: "2.5rem",
+                    fontWeight: "800",
+                  }}
+                >
+                 
+                </Avatar>
+              </Box>
+              <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.4)", mt: 0.5, fontWeight: 500 }}>
+                @{userName?.toLowerCase().replace(/\s+/g, "") || "usuario"}
+              </Typography>
             </Box>
 
             <Typography
@@ -360,7 +373,6 @@ export const Profile = () => {
               variant="body2"
               sx={{ color: "rgba(255, 255, 255, 0.4)", mt: 0.5, fontWeight: 500 }}
             >
-              @{userName?.toLowerCase().replace(/\s+/g, "") || "usuario"}
             </Typography>
           </Box>
 
