@@ -11,24 +11,34 @@ import {
   CardActions,
   CardMedia,
   Button,
+  Drawer,
 } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import MenuIcon from "@mui/icons-material/Menu"; // Ícone para abrir o menu mobile
 import PostModal from "./Layout/Modal";
 import { getPosts } from "../api/posts/Posts";
 import type { Post } from "../api/types/post";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import { useNavigate } from "react-router-dom";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
-import DynamicFeedIcon from "@mui/icons-material/DynamicFeed"; // Ícone extra para o menu lateral
+import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
+import { SettingsModal } from './../pages/ModalSettings/Settings';
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigate = useNavigate();
+  const handleOpenSettings = () => setOpenSettings(true);
+  const handleCloseSettings = () => setOpenSettings(false);
+
+  const handleToggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
 
   useEffect(() => {
     let isMounted = true;
@@ -36,6 +46,7 @@ export const Feed = () => {
     async function fetchPosts() {
       try {
         const data = await getPosts();
+        console.log("All posts:", data.length)
         if (isMounted) setPosts(data);
       } catch (error) {
         console.error("Erro ao buscar posts:", error);
@@ -44,45 +55,91 @@ export const Feed = () => {
     fetchPosts();
     return () => {
       isMounted = false;
-    }
+    };
   }, [isModalOpen]);
 
-  // Estilo dos botões de navegação secundários
-  const navButtonStyle = {
+  const sidebarButtonStyle = {
     borderRadius: "14px",
     textTransform: "none",
-    color: "rgba(255, 255, 255, 0.6)",
-    backgroundColor: "rgba(255, 255, 255, 0.02)",
     border: "1px solid rgba(255, 255, 255, 0.05)",
     minWidth: "auto",
     padding: "12px",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    backgroundColor: "#000000",
+    color: "#ffffff",
+    py: 1.5,
+    boxShadow: "0 4px 14px rgba(255,255,255,0.15)",
     "&:hover": {
-      color: "#fff",
-      backgroundColor: "rgba(255, 255, 255, 0.08)",
-      borderColor: "rgba(255, 255, 255, 0.2)",
-      transform: "translateY(-2px)",
+      backgroundColor: "rgba(247, 247, 247, 0.9)",
+      boxShadow: "0 6px 20px rgba(255,255,255,0.25)",
+      color: "#000",
     },
   };
 
-  // Estilo dos botões verticais da Sidebar (Desktop)
-  const sidebarButtonStyle = {
-    justifyContent: "flex-start",
-    color: "rgba(255, 255, 255, 0.7)",
-    textTransform: "none",
-    fontWeight: "600",
-    fontSize: "1.05rem",
-    borderRadius: "12px",
-    py: 1.5,
-    px: 2,
-    width: "100%",
-    transition: "all 0.2s",
-    "& .MuiButton-startIcon": { marginRight: 2 },
-    "&:hover": {
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      color: "#fff",
-    },
-  };
+  const renderSidebarNavigation = () => (
+    <Stack spacing={1} sx={{ width: "100%" }}>
+      <Button
+        variant="contained"
+        startIcon={<AddPhotoAlternateIcon />}
+        onClick={() => {
+          setIsModalOpen(true);
+          setMobileMenuOpen(false);
+        }}
+        sx={{
+          ...sidebarButtonStyle,
+          backgroundColor: "#0a0a0a",
+          color: "#ffffff",
+          "&:hover": {
+            ...sidebarButtonStyle["&:hover"], // Mantém a transição suave e o box-shadow original do hover se quiser, ou sobrescreve:
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            color: "#000000",
+          },
+        }}
+      >
+        Criar Post
+      </Button>
+      <Button
+        startIcon={<DynamicFeedIcon />}
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          setMobileMenuOpen(false);
+        }}
+        sx={{ ...sidebarButtonStyle, color: "#fff", backgroundColor: "rgba(255, 255, 255, 0.03)" }}
+      >
+        Feed
+      </Button>
+      <Button
+        startIcon={<PersonSearchIcon />}
+        onClick={() => {
+          navigate("/search");
+          setMobileMenuOpen(false);
+        }}
+        sx={sidebarButtonStyle}
+      >
+        Pesquisar
+      </Button>
+      <Button
+        startIcon={<AccountCircleIcon />}
+        onClick={() => {
+          navigate("/profile");
+          setMobileMenuOpen(false);
+        }}
+        sx={sidebarButtonStyle}
+      >
+        Perfil
+      </Button>
+      <Button
+        startIcon={<PermDataSettingIcon />}
+        onClick={() => {
+          handleOpenSettings();
+          setMobileMenuOpen(false);
+        }}
+        sx={sidebarButtonStyle}
+      >
+        Configurações
+      </Button>
+    </Stack>
+  );
 
   return (
     <Box
@@ -91,11 +148,11 @@ export const Feed = () => {
         backgroundColor: "#050505",
         minHeight: "100vh",
         display: "flex",
-        flexDirection: { xs: "column", md: "row" }, // Coluna no mobile, Linha no Desktop
+        flexDirection: { xs: "column", md: "row" },
         justifyContent: "center",
       }}
     >
-      {/* 1. BARRA LATERAL (APENAS DESKTOP - md para cima) */}
+      {/* 1. BARRA LATERAL FIXED (DESKTOP - md para cima) */}
       <Box
         component="aside"
         sx={{
@@ -107,7 +164,6 @@ export const Feed = () => {
           top: 0,
           borderRight: "1px solid rgba(255, 255, 255, 0.06)",
           p: 4,
-          justifyContent: "space-between",
         }}
       >
         <Stack spacing={4} sx={{ width: "100%" }}>
@@ -126,57 +182,11 @@ export const Feed = () => {
           >
             Pixly
           </Typography>
-
-          <Stack spacing={1} sx={{ width: "100%" }}>
-            <Button
-              startIcon={<DynamicFeedIcon />}
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              sx={{ ...sidebarButtonStyle, color: "#fff", backgroundColor: "rgba(255, 255, 255, 0.03)" }}
-            >
-              Feed
-            </Button>
-            <Button
-              startIcon={<PersonSearchIcon />}
-              onClick={() => navigate("/search")}
-              sx={sidebarButtonStyle}
-            >
-              Pesquisar
-            </Button>
-            <Button
-              startIcon={<AccountBoxIcon />}
-              onClick={() => navigate("/profile")}
-              sx={sidebarButtonStyle}
-            >
-              Perfil
-            </Button>
-          </Stack>
-
-          <Button
-            variant="contained"
-            startIcon={<AddPhotoAlternateIcon />}
-            onClick={() => setIsModalOpen(true)}
-            sx={{
-              borderRadius: "14px",
-              textTransform: "none",
-              fontWeight: "700",
-              fontSize: "1rem",
-              backgroundColor: "#000000",
-              color: "#ffffff",
-              py: 1.5,
-              boxShadow: "0 4px 14px rgba(255,255,255,0.15)",
-              "&:hover": {
-                backgroundColor: "rgba(247, 247, 247, 0.9)",
-                boxShadow: "0 6px 20px rgba(255,255,255,0.25)",
-                color: "#000"
-              },
-            }}
-          >
-            Criar Post
-          </Button>
+          {renderSidebarNavigation()}
         </Stack>
       </Box>
 
-      {/* 2. BARRA SUPERIOR (APENAS MOBILE - ocultada de md para cima) */}
+      {/* 2. BARRA SUPERIOR (MOBILE - ocultada de md para cima) */}
       <Box
         component="header"
         sx={{
@@ -188,7 +198,7 @@ export const Feed = () => {
           backdropFilter: "blur(16px)",
           backgroundColor: "rgba(5, 5, 5, 0.75)",
           borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
-          py: 2,
+          py: 1.5,
         }}
       >
         <Container
@@ -197,7 +207,6 @@ export const Feed = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            gap: 2,
           }}
         >
           <Typography
@@ -215,39 +224,60 @@ export const Feed = () => {
             Pixly
           </Typography>
 
-          <Stack direction="row" spacing={1.5} alignItems="center">
-            <Button
-              variant="contained"
-              startIcon={<AddPhotoAlternateIcon />}
-              onClick={() => setIsModalOpen(true)}
-              sx={{
-                borderRadius: "14px",
-                textTransform: "none",
-                fontWeight: "700",
-                fontSize: "0.9rem",
-                backgroundColor: "#fff",
-                color: "#000",
-                px: 2.5,
-                py: 1.2,
-                boxShadow: "0 4px 14px rgba(255,255,255,0.15)",
-                "&:hover": {
-                  backgroundColor: "rgba(255,255,255,0.9)",
-                },
-              }}
-            >
-              Criar
-            </Button>
-            <Button onClick={() => navigate("/profile")} sx={navButtonStyle}>
-              <AccountBoxIcon />
-            </Button>
-            <Button onClick={() => navigate("/search")} sx={navButtonStyle}>
-              <PersonSearchIcon />
-            </Button>
-          </Stack>
+          <IconButton
+            onClick={handleToggleMobileMenu}
+            sx={{
+              color: "#fff",
+              backgroundColor: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "12px",
+              p: 1.2,
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
         </Container>
       </Box>
 
-      {/* 3. CONTEÚDO CENTRAL DO FEED */}
+      {/* 3. MENU LATERAL RETRÁTIL (DRAWER MOBILE) */}
+      <Drawer
+        anchor="left"
+        open={mobileMenuOpen}
+        onClose={handleToggleMobileMenu}
+        slotProps={{
+          backdrop: {
+            sx: { backdropFilter: "blur(4px)", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+          },
+        }}
+        PaperProps={{
+          sx: {
+            width: "280px",
+            backgroundColor: "#050505",
+            borderRight: "1px solid rgba(255, 255, 255, 0.06)",
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+      >
+        <Typography
+          variant="h4"
+          fontWeight="900"
+          sx={{
+            background: "linear-gradient(45deg, #fff, rgba(255,255,255,0.7))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            letterSpacing: -1.5,
+            mb: 4,
+            pl: 1,
+          }}
+        >
+          Pixly
+        </Typography>
+        {renderSidebarNavigation()}
+      </Drawer>
+
+      {/* 4. CONTEÚDO CENTRAL DO FEED */}
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
         <Container maxWidth="md" sx={{ pt: 4, pb: 8, px: 2 }}>
           <Stack spacing={3}>
@@ -268,7 +298,6 @@ export const Feed = () => {
                   },
                 }}
               >
-                {/* Header do Card */}
                 <CardHeader
                   avatar={
                     <Avatar
@@ -301,7 +330,6 @@ export const Feed = () => {
                   sx={{ p: 2.5, pb: 1.5 }}
                 />
 
-                {/* Conteúdo em Texto */}
                 <CardContent sx={{ px: 2.5, pt: 0, pb: 0 }}>
                   <Typography
                     variant="body1"
@@ -316,9 +344,8 @@ export const Feed = () => {
                   </Typography>
                 </CardContent>
 
-                {/* Elemento de Mídia do Post */}
                 {(post.contentImageUrl || post.contentImage) && (
-                  <Box sx={{ px: 1, pb: 0 }}>
+                  <Box sx={{ px: 1, pb: 0, mt: 1.5 }}>
                     <CardMedia
                       component="img"
                       image={
@@ -338,9 +365,7 @@ export const Feed = () => {
                   </Box>
                 )}
 
-                {/* Ações e Métricas do Card */}
                 <CardActions sx={{ px: 2, py: 1.5, gap: 2, borderTop: "1px solid rgba(255,255,255,0.02)", mt: 1 }}>
-                  {/* Curtidas */}
                   <Stack direction="row" alignItems="center" spacing={0.5}>
                     <IconButton
                       size="small"
@@ -362,7 +387,6 @@ export const Feed = () => {
                     </Typography>
                   </Stack>
 
-                  {/* Comentários */}
                   <Stack direction="row" alignItems="center" spacing={0.5}>
                     <IconButton
                       size="small"
@@ -390,8 +414,8 @@ export const Feed = () => {
         </Container>
       </Box>
 
-      {/* Modal para criar novos posts */}
       <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <SettingsModal open={openSettings} handleClose={handleCloseSettings} />
     </Box>
   );
 };

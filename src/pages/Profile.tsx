@@ -9,11 +9,13 @@ import {
   IconButton,
   Tooltip,
   Grid,
+  Drawer, // Importado para o menu mobile
 } from "@mui/material";
 import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import HomeIcon from "@mui/icons-material/Home";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MenuIcon from "@mui/icons-material/Menu"; // Importado para o botão hamburguer
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 
@@ -34,12 +36,15 @@ export const Profile = () => {
   const [avatarVersion, setAvatarVersion] = useState(0);
   const [avatar, setAvatar] = useState<string>(" ");
   const [posts, setPosts] = useState<Post[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Estado do menu mobile
 
   const userId = localStorage.getItem("userId") || "";
   const userName = localStorage.getItem("userName");
 
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
+
+  const handleToggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
 
   const handleOpenDelete = (id: string) => {
     setSelectedPostId(id);
@@ -56,6 +61,7 @@ export const Profile = () => {
     try {
       if (!userId) return;
       const data = await getPostsByUser(userId);
+      console.log("Posts:", data);
       setPosts(data);
     } catch (error) {
       console.error("Erro ao buscar posts:", error);
@@ -70,6 +76,7 @@ export const Profile = () => {
     try {
       if (!userId) return;
       const user = await getUser(userId);
+      console.log("User:", user);
       if (user && user.avatar) {
         setAvatar(user.avatar);
       }
@@ -82,44 +89,74 @@ export const Profile = () => {
     fetchUser();
   }, [fetchUser]);
 
-  // Estilo dos botões de navegação do topo (Mobile)
-  const headerNavButtonStyle = {
+  // Estilo dos botões verticais da Sidebar (Desktop e Mobile Drawer)
+  const sidebarButtonStyle = {
     borderRadius: "14px",
     textTransform: "none",
-    color: "rgba(255, 255, 255, 0.6)",
-    backgroundColor: "rgba(255, 255, 255, 0.02)",
     border: "1px solid rgba(255, 255, 255, 0.05)",
     minWidth: "auto",
-    padding: { xs: "10px 18px", sm: "12px 24px" },
+    padding: "12px",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    "& :svg": { fontSize: "1.3rem" },
+    backgroundColor: "#000000",
+    color: "#ffffff",
+    py: 1.5,
+    boxShadow: "0 4px 14px rgba(255,255,255,0.15)",
     "&:hover": {
-      color: "#fff",
-      backgroundColor: "rgba(255, 255, 255, 0.08)",
-      borderColor: "rgba(255, 255, 255, 0.2)",
-      transform: "translateY(-2px)",
+      backgroundColor: "rgba(247, 247, 247, 0.9)",
+      boxShadow: "0 6px 20px rgba(255,255,255,0.25)",
+      color: "#000",
     },
   };
 
-  // Estilo dos botões verticais da Sidebar (Desktop)
-  const sidebarButtonStyle = {
-    justify: "flex-start",
-    justifyContent: "flex-start",
-    color: "rgba(255, 255, 255, 0.7)",
-    textTransform: "none",
-    fontWeight: "600",
-    fontSize: "1.05rem",
-    borderRadius: "12px",
-    py: 1.5,
-    px: 2,
-    width: "100%",
-    transition: "all 0.2s",
-    "& .MuiButton-startIcon": { marginRight: 2 },
-    "&:hover": {
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      color: "#fff",
-    },
-  };
+  // Renderizador da lista de links (Reutilizável)
+  const renderSidebarNavigation = () => (
+    <Stack spacing={1} sx={{ width: "100%" }}>
+      <Button
+        startIcon={<HomeIcon />}
+        onClick={() => {
+          navigate("/home");
+          setMobileMenuOpen(false);
+        }}
+        sx={sidebarButtonStyle}
+      >
+        Feed
+      </Button>
+      <Button
+        startIcon={<PersonSearchIcon />}
+        onClick={() => {
+          navigate("/search");
+          setMobileMenuOpen(false);
+        }}
+        sx={sidebarButtonStyle}
+      >
+        Pesquisar
+      </Button>
+      <Button
+        startIcon={<PermDataSettingIcon />}
+        onClick={() => {
+          handleOpenSettings();
+          setMobileMenuOpen(false);
+        }}
+        sx={sidebarButtonStyle}
+      >
+        Configurações
+      </Button>
+      <Button
+        startIcon={<AccountCircleIcon />}
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          setMobileMenuOpen(false);
+        }}
+        sx={{
+          ...sidebarButtonStyle,
+          color: "#fff",
+          backgroundColor: "rgba(255, 255, 255, 0.05)",
+        }}
+      >
+        Perfil
+      </Button>
+    </Stack>
+  );
 
   return (
     <Box
@@ -163,41 +200,7 @@ export const Profile = () => {
           >
             Pixly
           </Typography>
-
-          <Stack spacing={1} sx={{ width: "100%" }}>
-            <Button
-              startIcon={<HomeIcon />}
-              onClick={() => navigate("/home")}
-              sx={sidebarButtonStyle}
-            >
-              Feed
-            </Button>
-            <Button
-              startIcon={<PersonSearchIcon />}
-              onClick={() => navigate("/search")}
-              sx={sidebarButtonStyle}
-            >
-              Pesquisar
-            </Button>
-            <Button
-              startIcon={<PermDataSettingIcon />}
-              onClick={handleOpenSettings}
-              sx={sidebarButtonStyle}
-            >
-              Configurações
-            </Button>
-            <Button
-              startIcon={<AccountCircleIcon />}
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              sx={{
-                ...sidebarButtonStyle,
-                color: "#fff",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-              }}
-            >
-              Perfil
-            </Button>
-          </Stack>
+          {renderSidebarNavigation()}
         </Stack>
       </Box>
 
@@ -213,35 +216,86 @@ export const Profile = () => {
           backdropFilter: "blur(16px)",
           backgroundColor: "rgba(5, 5, 5, 0.75)",
           borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
+          py: 1.5,
         }}
       >
         <Container
-          maxWidth="md"
-          sx={{ py: 1.5, px: 2, display: "flex", justifyContent: "center" }}
+          maxWidth="sm"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          <Stack
-            direction="row"
-            spacing={{ xs: 2, sm: 4 }}
+          <Typography
+            variant="h4"
+            fontWeight="900"
             sx={{
-              width: "100%",
-              maxWidth: "500px",
-              justifyContent: "center",
+              background: "linear-gradient(45deg, #fff, rgba(255,255,255,0.7))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              letterSpacing: -1.5,
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/home")}
+          >
+            Pixly
+          </Typography>
+
+          <IconButton
+            onClick={handleToggleMobileMenu}
+            sx={{
+              color: "#fff",
+              backgroundColor: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "12px",
+              p: 1.2,
             }}
           >
-            <Button onClick={() => navigate("/home")} sx={headerNavButtonStyle}>
-              <HomeIcon />
-            </Button>
-            <Button onClick={() => navigate("/search")} sx={headerNavButtonStyle}>
-              <PersonSearchIcon />
-            </Button>
-            <Button onClick={handleOpenSettings} sx={headerNavButtonStyle}>
-              <PermDataSettingIcon />
-            </Button>
-          </Stack>
+            <MenuIcon />
+          </IconButton>
         </Container>
       </Box>
 
-      {/* 3. CONTEÚDO CENTRAL DO PERFIL */}
+      {/* 3. MENU LATERAL RETRÁTIL (DRAWER MOBILE) */}
+      <Drawer
+        anchor="left"
+        open={mobileMenuOpen}
+        onClose={handleToggleMobileMenu}
+        slotProps={{
+          backdrop: {
+            sx: { backdropFilter: "blur(4px)", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+          },
+        }}
+        PaperProps={{
+          sx: {
+            width: "280px",
+            backgroundColor: "#050505",
+            borderRight: "1px solid rgba(255, 255, 255, 0.06)",
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+      >
+        <Typography
+          variant="h4"
+          fontWeight="900"
+          sx={{
+            background: "linear-gradient(45deg, #fff, rgba(255,255,255,0.7))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            letterSpacing: -1.5,
+            mb: 4,
+            pl: 1,
+          }}
+        >
+          Pixly
+        </Typography>
+        {renderSidebarNavigation()}
+      </Drawer>
+
+      {/* 4. CONTEÚDO CENTRAL DO PERFIL */}
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", width: "100%" }}>
         <Container
           maxWidth="md"
@@ -337,11 +391,11 @@ export const Profile = () => {
                       transition: "border-color 0.2s ease-in-out, transform 0.2s ease-in-out",
                       "&:hover": {
                         borderColor: "rgba(255, 255, 255, 0.12)",
-                        transform: "translateY(-4px)"
+                        transform: "translateY(-4px)",
                       },
                     }}
                   >
-                    {/* 1. IMAGEM NO TOPO (Apenas renderiza se existir) */}
+                    {/* 1. IMAGEM NO TOPO */}
                     {post.contentImage && (
                       <Box
                         sx={{
@@ -364,10 +418,9 @@ export const Profile = () => {
                       </Box>
                     )}
 
-                    {/* 2. CONTEÚDO E TEXTOS ABAIXO DA IMAGEM */}
+                    {/* 2. CONTEÚDO E TEXTOS */}
                     <Box sx={{ p: 2.5, flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                       <Box>
-                        {/* Informações da marca/usuário + Botão de deletar */}
                         <Box
                           sx={{
                             display: "flex",
@@ -397,7 +450,7 @@ export const Profile = () => {
                                 padding: "4px",
                                 "&:hover": {
                                   color: "#ef4444",
-                                  backgroundColor: "rgba(239, 68, 68, 0.08)"
+                                  backgroundColor: "rgba(239, 68, 68, 0.08)",
                                 },
                               }}
                             >
@@ -406,7 +459,6 @@ export const Profile = () => {
                           </Tooltip>
                         </Box>
 
-                        {/* Título do Card */}
                         <Typography
                           variant="subtitle1"
                           fontWeight="700"
@@ -423,7 +475,6 @@ export const Profile = () => {
                           {post.title}
                         </Typography>
 
-                        {/* Texto complementar do card */}
                         <Typography
                           variant="body2"
                           sx={{

@@ -5,6 +5,7 @@ export const createPosts = async (postData: any) => {
   const formData = new FormData();
   formData.append("title", postData.title);
   formData.append("contentText", postData.contentText);
+  console.log(formData)
 
   if (postData.contentImage) {
     formData.append("contentImage", postData.contentImage);
@@ -17,10 +18,10 @@ export const createPosts = async (postData: any) => {
 export async function getPosts(): Promise<Post[]> {
   try {
     const { data } = await api.get<Post[]>("/posts");
-    return data;
+    return data || [];
   } catch (error) {
     console.error("Erro ao buscar posts:", error);
-    throw error;
+    return [];
   }
 }
 
