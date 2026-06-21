@@ -12,13 +12,12 @@ export interface PostAttributes {
   userId: string;
 }
 
-
 export interface Post {
   id: string;
   title: string;
   contentText: string;
-  contentImage: string | null;     
-  contentImageUrl?: string | null; 
+  contentImage: string | null;
+  contentImageUrl?: string | null;
   userId: string;
   user?: {
     name: string;
@@ -26,10 +25,11 @@ export interface Post {
     avatar: string;
   };
   createdAt?: string;
-
+  likesCount?: number;
+  liked?: boolean;
 }
 export type CreatePost = {
-  title?: string;          
+  title?: string;
   contentText: string;
   contentImage?: string | null;
 };

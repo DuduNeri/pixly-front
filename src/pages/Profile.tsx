@@ -9,16 +9,15 @@ import {
   IconButton,
   Tooltip,
   Grid,
-  Drawer, // Importado para o menu mobile
+  Drawer, 
 } from "@mui/material";
 import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
-import HomeIcon from "@mui/icons-material/Home";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu"; 
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
-
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { SettingsModal } from "./ModalSettings/Settings";
 import { ExcludeModal } from "./Layouts/ExcludeModal";
 import { getPostsByUser } from "../api/posts/Posts";
@@ -26,10 +25,13 @@ import type { Post } from "../api/types/post";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import AvatarModal from "../components/Layout/Avatar";
 import { getUser } from "../api/users/users";
+import PostModal from "../components/Layout/Modal";
+import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
 
 export const Profile = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalPostOpen, setIsModalPostOpen] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [isExcludeModalOpen, setIsExcludeModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
@@ -37,6 +39,7 @@ export const Profile = () => {
   const [avatar, setAvatar] = useState<string>(" ");
   const [posts, setPosts] = useState<Post[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); 
+  const [mobileMenuPostOpen, setMobileMenuPostOpen] = useState(false); 
 
   const userId = localStorage.getItem("userId") || "";
   const userName = localStorage.getItem("userName");
@@ -70,7 +73,8 @@ export const Profile = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts]);
+  }, [fetchPosts, isModalPostOpen]);
+
 
   const fetchUser = useCallback(async () => {
     try {
@@ -110,7 +114,27 @@ export const Profile = () => {
   const renderSidebarNavigation = () => (
     <Stack spacing={1} sx={{ width: "100%" }}>
       <Button
-        startIcon={<HomeIcon />}
+              variant="contained"
+              startIcon={<AddPhotoAlternateIcon />}
+              onClick={() => {
+                setIsModalPostOpen(true);
+                setMobileMenuPostOpen(false);
+              }}
+              sx={{
+                ...sidebarButtonStyle,
+                backgroundColor: "#0a0a0a",
+                color: "#ffffff",
+                "&:hover": {
+                  ...sidebarButtonStyle["&:hover"], 
+                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                  color: "#000000",
+                },
+              }}
+            >
+              Criar Post
+            </Button>
+      <Button
+        startIcon={<DynamicFeedIcon />}
         onClick={() => {
           navigate("/home");
           setMobileMenuOpen(false);
@@ -130,16 +154,6 @@ export const Profile = () => {
         Pesquisar
       </Button>
       <Button
-        startIcon={<PermDataSettingIcon />}
-        onClick={() => {
-          handleOpenSettings();
-          setMobileMenuOpen(false);
-        }}
-        sx={sidebarButtonStyle}
-      >
-        Configurações
-      </Button>
-      <Button
         startIcon={<AccountCircleIcon />}
         onClick={() => {
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -157,6 +171,17 @@ export const Profile = () => {
       >
         Perfil
       </Button>
+      <Button
+        startIcon={<PermDataSettingIcon />}
+        onClick={() => {
+          handleOpenSettings();
+          setMobileMenuOpen(false);
+        }}
+        sx={sidebarButtonStyle}
+      >
+        Configurações
+      </Button>
+      
     </Stack>
   );
 
@@ -473,7 +498,7 @@ export const Profile = () => {
 
                         <Typography
                           variant="subtitle1"
-                          fontWeight="700"
+                          fontWeight="400"
                           color="#fff"
                           sx={{
                             lineHeight: 1.3,
@@ -484,7 +509,7 @@ export const Profile = () => {
                             overflow: "hidden",
                           }}
                         >
-                          {post.title}
+                         {post.title}
                         </Typography>
 
                         <Typography
@@ -528,7 +553,7 @@ export const Profile = () => {
           fetchUser();
         }}
       />
-
+      <PostModal open={isModalPostOpen} onClose={() => setIsModalPostOpen(false)} />
       <SettingsModal open={openSettings} handleClose={handleCloseSettings} />
     </Box>
   );

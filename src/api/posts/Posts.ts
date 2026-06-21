@@ -5,7 +5,7 @@ export const createPosts = async (postData: any) => {
   const formData = new FormData();
   formData.append("title", postData.title);
   formData.append("contentText", postData.contentText);
-  console.log(formData)
+  console.log(formData);
 
   if (postData.contentImage) {
     formData.append("contentImage", postData.contentImage);
@@ -38,9 +38,21 @@ export async function deletePost(id: string): Promise<IPosts> {
 export async function getPostsByUser(userId: string): Promise<Post[]> {
   try {
     const { data } = await api.get(`/posts/${userId}`);
-    return data;  
+    return data;
   } catch (error) {
     console.error("Erro ao buscar posts do usuário:", error);
+    throw error;
+  }
+}
+
+export async function createLike(userId: string, postId: string) {
+  try {
+    const response = await api.post(`/like/${userId}`, {
+      postId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao curtir post:", error);
     throw error;
   }
 }

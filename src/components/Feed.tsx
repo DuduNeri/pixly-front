@@ -18,7 +18,7 @@ import { useState, useEffect } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import MenuIcon from "@mui/icons-material/Menu"; // Ícone para abrir o menu mobile
+import MenuIcon from "@mui/icons-material/Menu";
 import PostModal from "./Layout/Modal";
 import { getPosts } from "../api/posts/Posts";
 import type { Post } from "../api/types/post";
@@ -26,7 +26,9 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useNavigate } from "react-router-dom";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
-import { SettingsModal } from './../pages/ModalSettings/Settings';
+import { SettingsModal } from "./../pages/ModalSettings/Settings";
+import { createLike } from "../api/posts/Posts";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,22 +43,51 @@ export const Feed = () => {
   const handleToggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
 
   useEffect(() => {
-    let isMounted = true;
-
+    let isMounted = true;   
+    
     async function fetchPosts() {
       try {
         const data = await getPosts();
-        console.log("All posts:", data.length)
+        console.log("All posts:", data.length);
         if (isMounted) setPosts(data);
       } catch (error) {
         console.error("Erro ao buscar posts:", error);
       }
     }
+
     fetchPosts();
+
     return () => {
       isMounted = false;
     };
+    
   }, [isModalOpen]);
+
+  const handleLike = async (postId: string) => {
+    try {
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) return;
+
+      const result = await createLike(userId, postId);
+      console.log("like:", result);
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                liked: result.liked,
+                likesCount: result.likesCount,
+              }
+            : post,
+        ),
+      );
+
+      console.log("like:", result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const sidebarButtonStyle = {
     borderRadius: "14px",
@@ -90,7 +121,7 @@ export const Feed = () => {
           backgroundColor: "#0a0a0a",
           color: "#ffffff",
           "&:hover": {
-            ...sidebarButtonStyle["&:hover"], // Mantém a transição suave e o box-shadow original do hover se quiser, ou sobrescreve:
+            ...sidebarButtonStyle["&:hover"],
             backgroundColor: "rgba(255, 255, 255, 0.9)",
             color: "#000000",
           },
@@ -104,7 +135,15 @@ export const Feed = () => {
           window.scrollTo({ top: 0, behavior: "smooth" });
           setMobileMenuOpen(false);
         }}
-        sx={{ ...sidebarButtonStyle, color: "#fff", backgroundColor: "rgba(255, 255, 255, 0.03)" }}
+        sx={{
+          ...sidebarButtonStyle,
+          backgroundColor: "#ffffff",
+          color: "#000000",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+            color: "#ffffff",
+          },
+        }}
       >
         Feed
       </Button>
@@ -246,7 +285,10 @@ export const Feed = () => {
         onClose={handleToggleMobileMenu}
         slotProps={{
           backdrop: {
-            sx: { backdropFilter: "blur(4px)", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+            sx: {
+              backdropFilter: "blur(4px)",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            },
           },
         }}
         PaperProps={{
@@ -279,7 +321,10 @@ export const Feed = () => {
 
       {/* 4. CONTEÚDO CENTRAL DO FEED */}
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
-        <Container maxWidth="md" sx={{ pt: 4, pb: 8, px: 2 }}>
+        <Container
+          maxWidth={false}
+          sx={{ maxWidth: "750px", mx: "auto", pt: 4, pb: 8, px: 2 }}
+        >
           <Stack spacing={3}>
             {posts.map((post) => (
               <Card
@@ -318,12 +363,22 @@ export const Feed = () => {
                     </Avatar>
                   }
                   title={
-                    <Typography variant="subtitle1" fontWeight="700" sx={{ fontSize: "0.95rem" }}>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="700"
+                      sx={{ fontSize: "0.95rem" }}
+                    >
                       {post.user?.name || "Usuário"}
                     </Typography>
                   }
                   subheader={
-                    <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.4)", fontWeight: 500 }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "rgba(255, 255, 255, 0.4)",
+                        fontWeight: 500,
+                      }}
+                    >
                       {post.title}
                     </Typography>
                   }
@@ -365,25 +420,42 @@ export const Feed = () => {
                   </Box>
                 )}
 
-                <CardActions sx={{ px: 2, py: 1.5, gap: 2, borderTop: "1px solid rgba(255,255,255,0.02)", mt: 1 }}>
+                <CardActions
+                  sx={{
+                    px: 2,
+                    py: 1.5,
+                    gap: 2,
+                    borderTop: "1px solid rgba(255,255,255,0.02)",
+                    mt: 1,
+                  }}
+                >
                   <Stack direction="row" alignItems="center" spacing={0.5}>
                     <IconButton
+                      onClick={() => handleLike(post.id)}
                       size="small"
                       sx={{
-                        color: "rgba(255, 255, 255, 0.3)",
+                        color: post.liked ? "#ef4444" : "rgba(255,255,255,0.3)",
                         backgroundColor: "rgba(255,255,255,0.02)",
                         p: "6px",
                         transition: "0.2s",
                         "&:hover": {
                           color: "#ef4444",
-                          backgroundColor: "rgba(239, 68, 68, 0.1)",
+                          backgroundColor: "rgba(239,68,68,0.1)",
                         },
                       }}
                     >
-                      <FavoriteBorderIcon sx={{ fontSize: "1.15rem" }} />
+                      {post.liked ? (
+                        <FavoriteIcon sx={{ fontSize: "1.15rem" }} />
+                      ) : (
+                        <FavoriteBorderIcon sx={{ fontSize: "1.15rem" }} />
+                      )}
                     </IconButton>
-                    <Typography variant="caption" fontWeight="600" sx={{ color: "rgba(255,255,255,0.4)", pl: 0.5 }}>
-                      0
+                    <Typography
+                      variant="caption"
+                      fontWeight="600"
+                      sx={{ color: "rgba(255,255,255,0.4)", pl: 0.5 }}
+                    >
+                      {post.likesCount ?? 0}
                     </Typography>
                   </Stack>
 
@@ -403,7 +475,11 @@ export const Feed = () => {
                     >
                       <ChatBubbleOutlineIcon sx={{ fontSize: "1.15rem" }} />
                     </IconButton>
-                    <Typography variant="caption" fontWeight="600" sx={{ color: "rgba(255,255,255,0.4)", pl: 0.5 }}>
+                    <Typography
+                      variant="caption"
+                      fontWeight="600"
+                      sx={{ color: "rgba(255,255,255,0.4)", pl: 0.5 }}
+                    >
                       0
                     </Typography>
                   </Stack>

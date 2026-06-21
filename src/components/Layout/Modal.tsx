@@ -33,13 +33,12 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
     setPreview(URL.createObjectURL(file));
   };
 
-
   const handlePost = async () => {
     try {
       const postData = { title, contentText, contentImage: image };
       await createPosts(postData);
       setPosted(true);
-      console.log(postData)
+      console.log(postData);
     } catch (error) {
       console.error("Erro ao criar post:", error);
     }
@@ -57,13 +56,16 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
   }, [posted, onClose]);
 
   return (
-    <Modal 
-      open={open} 
+    <Modal
+      open={open}
       onClose={onClose}
       closeAfterTransition
       slotProps={{
         backdrop: {
-          sx: { backdropFilter: "blur(8px)", backgroundColor: "rgba(0,0,0,0.8)" },
+          sx: {
+            backdropFilter: "blur(8px)",
+            backgroundColor: "rgba(0,0,0,0.8)",
+          },
         },
       }}
     >
@@ -95,12 +97,18 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
               borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
             }}
           >
-            <Typography variant="h6" sx={{ color: "#fff", fontWeight: 800, fontSize: "1.1rem" }}>
+            <Typography
+              variant="h6"
+              sx={{ color: "#fff", fontWeight: 800, fontSize: "1.1rem" }}
+            >
               Nova publicação
-            </Typography> 
-            <IconButton 
+            </Typography>
+            <IconButton
               onClick={onClose}
-              sx={{ color: "rgba(255,255,255,0.3)", "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,0.05)" } }}
+              sx={{
+                color: "rgba(255,255,255,0.3)",
+                "&:hover": { color: "#fff", bgcolor: "rgba(255,255,255,0.05)" },
+              }}
             >
               <X size={22} />
             </IconButton>
@@ -116,11 +124,14 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
               variant="standard"
               InputProps={{
                 disableUnderline: true,
-                sx: { 
-                  color: "#fff", 
-                  fontSize: "1.3rem", 
+                sx: {
+                  color: "#fff",
+                  fontSize: "1.3rem",
                   fontWeight: 700,
-                  "&::placeholder": { color: "rgba(255,255,255,0.2)", opacity: 1 }
+                  "&::placeholder": {
+                    color: "rgba(255,255,255,0.2)",
+                    opacity: 1,
+                  },
                 },
               }}
             />
@@ -132,7 +143,9 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
                 height: 240,
                 mt: 3,
                 borderRadius: "20px",
-                border: preview ? "1px solid rgba(255,255,255,0.1)" : "2px dashed rgba(255,255,255,0.15)",
+                border: preview
+                  ? "1px solid rgba(255,255,255,0.1)"
+                  : "2px dashed rgba(255,255,255,0.15)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -140,9 +153,11 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
                 transition: "all 0.3s ease",
                 bgcolor: "rgba(255,255,255,0.02)",
                 "&:hover": {
-                  borderColor: preview ? "rgba(255,255,255,0.2)" : "var(--accent-pink)",
+                  borderColor: preview
+                    ? "rgba(255,255,255,0.2)"
+                    : "var(--accent-pink)",
                   bgcolor: "rgba(255,255,255,0.04)",
-                }
+                },
               }}
             >
               {preview ? (
@@ -154,7 +169,10 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
                   />
                   <Tooltip title="Remover imagem">
                     <IconButton
-                      onClick={() => { setImage(null); setPreview(null); }}
+                      onClick={() => {
+                        setImage(null);
+                        setPreview(null);
+                      }}
                       sx={{
                         position: "absolute",
                         top: 12,
@@ -162,7 +180,7 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
                         bgcolor: "rgba(0,0,0,0.7)",
                         color: "#fff",
                         backdropFilter: "blur(4px)",
-                        "&:hover": { bgcolor: "#ff4b4b" }
+                        "&:hover": { bgcolor: "#ff4b4b" },
                       }}
                     >
                       <Trash2 size={18} />
@@ -170,23 +188,41 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
                   </Tooltip>
                 </>
               ) : (
-                <Box 
-                  component="label" 
-                  sx={{ 
-                    cursor: "pointer", 
-                    display: "flex", 
-                    flexDirection: "column", 
+                <Box
+                  component="label"
+                  sx={{
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
                     alignItems: "center",
-                    gap: 1.5
+                    gap: 1.5,
                   }}
                 >
-                  <Box sx={{ p: 2, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)" }}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: "50%",
+                      bgcolor: "rgba(255,255,255,0.05)",
+                      color: "rgba(255,255,255,0.4)",
+                    }}
+                  >
                     <ImagePlus size={32} />
                   </Box>
-                  <Typography sx={{ color: "rgba(255,255,255,0.4)", fontWeight: 500, fontSize: "0.9rem" }}>
+                  <Typography
+                    sx={{
+                      color: "rgba(255,255,255,0.4)",
+                      fontWeight: 500,
+                      fontSize: "0.9rem",
+                    }}
+                  >
                     Adicionar foto
                   </Typography>
-                  <input hidden type="file" accept="image/*" onChange={handleImageChange} />
+                  <input
+                    hidden
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
                 </Box>
               )}
             </Box>
@@ -203,10 +239,10 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
               sx={{ mt: 3 }}
               InputProps={{
                 disableUnderline: true,
-                sx: { 
-                  color: "rgba(255,255,255,0.8)", 
+                sx: {
+                  color: "rgba(255,255,255,0.8)",
                   fontSize: "1rem",
-                  lineHeight: 1.6
+                  lineHeight: 1.6,
                 },
               }}
             />
@@ -217,8 +253,8 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
               onClick={handlePost}
               disabled={!title || !contentText}
               variant="contained"
-              sx={{ 
-                mt: 4, 
+              sx={{
+                mt: 4,
                 py: 1.5,
                 borderRadius: "14px",
                 textTransform: "none",
@@ -234,8 +270,8 @@ const PostModal = ({ open, onClose }: PostModalProps) => {
                 },
                 "&.Mui-disabled": {
                   background: "rgba(255,255,255,0.05)",
-                  color: "rgba(255,255,255,0.2)"
-                }
+                  color: "rgba(255,255,255,0.2)",
+                },
               }}
             >
               Postar publicação
