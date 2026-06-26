@@ -64,7 +64,6 @@ export const Profile = () => {
     try {
       if (!userId) return;
       const data = await getPostsByUser(userId);
-      console.log("Posts:", data);
       setPosts(data);
     } catch (error) {
       console.error("Erro ao buscar posts:", error);
@@ -73,14 +72,13 @@ export const Profile = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts, isModalPostOpen]);
+  }, [fetchPosts, isModalPostOpen ]);
 
 
   const fetchUser = useCallback(async () => {
     try {
       if (!userId) return;
       const user = await getUser(userId);
-      console.log("User:", user);
       if (user && user.avatar) {
         setAvatar(user.avatar);
       }
@@ -179,7 +177,7 @@ export const Profile = () => {
         }}
         sx={sidebarButtonStyle}
       >
-        Configurações
+        Opções
       </Button>
       
     </Stack>
@@ -415,7 +413,7 @@ export const Profile = () => {
           ) : (
             <Grid container spacing={3} alignItems="stretch">
               {posts.map((post) => (
-                <Grid item xs={12} sm={6} key={post.id} sx={{ display: "flex" }}>
+                <Grid size={{ xs: 12, sm: 6 }} key={post.id} sx={{ display: "flex" }}>
                   <Box
                     sx={{
                       display: "flex",

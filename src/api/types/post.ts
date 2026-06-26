@@ -25,6 +25,7 @@ export interface Post {
     avatar: string;
   };
   createdAt?: string;
+  comments?: string;
   likesCount?: number;
   liked?: boolean;
 }
@@ -50,3 +51,10 @@ export interface UpdatePhoto {
   userId: string;
   avatar: string;
 }
+
+export type GetCommentDTO = {
+  id: string;
+  content: string;
+  postId: string;
+  userId: string;
+};

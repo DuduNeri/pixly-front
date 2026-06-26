@@ -83,16 +83,6 @@ export const SettingsModal = ({ open, handleClose }: SettingsModalProps) => {
             ))}
 
             <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.06)", my: 0.5 }} />
-
-            {/* Perfil */}
-            <Button
-              fullWidth
-              sx={menuButtonStyle}
-              onClick={() => handleNavigation("/profile")}
-            >
-              Profile
-            </Button>
-
             <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.06)", my: 0.5 }} />
 
             {/* Ação de Fechar */}

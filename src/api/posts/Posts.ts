@@ -1,5 +1,5 @@
 import { api } from "../conection";
-import type { IPosts, Post, PostAttributes } from "../types/post";
+import type { GetCommentDTO, IPosts, Post, PostAttributes } from "../types/post";
 
 export const createPosts = async (postData: any) => {
   const formData = new FormData();
@@ -53,6 +53,16 @@ export async function createLike(userId: string, postId: string) {
     return response.data;
   } catch (error) {
     console.error("Erro ao curtir post:", error);
+    throw error;
+  }
+}
+
+export async function getComments(id: string): Promise<GetCommentDTO[]> {
+  try {
+    const response = await api.get(`/posts/${id}/comments`)
+    return response.data
+  } catch (error) {
+    console.error("Erro ao buscar comentario:", error);
     throw error;
   }
 }

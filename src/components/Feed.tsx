@@ -29,6 +29,7 @@ import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
 import { SettingsModal } from "./../pages/ModalSettings/Settings";
 import { createLike } from "../api/posts/Posts";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { CommentModal } from "../pages/Layouts/CommentModal";
 
 export const Feed = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,19 +37,26 @@ export const Feed = () => {
   const [openSettings, setOpenSettings] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // 1. Estado para controlar o modal de comentário e qual post está ativo
+  const [isOpenModalComment, setIsCommentModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
   const navigate = useNavigate();
   const handleOpenSettings = () => setOpenSettings(true);
   const handleCloseSettings = () => setOpenSettings(false);
-
   const handleToggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
 
+  const handleOpenCommentModal = (post: Post) => {
+    setSelectedPost(post);
+    setIsCommentModal(true);
+  };
+
   useEffect(() => {
-    let isMounted = true;   
-    
+    let isMounted = true;
+
     async function fetchPosts() {
       try {
         const data = await getPosts();
-        console.log("All posts:", data.length);
         if (isMounted) setPosts(data);
       } catch (error) {
         console.error("Erro ao buscar posts:", error);
@@ -60,30 +68,26 @@ export const Feed = () => {
     return () => {
       isMounted = false;
     };
-    
-  }, [isModalOpen]);
+
+  }, [isModalOpen, isOpenModalComment]);
 
   const handleLike = async (postId: string) => {
     try {
       const userId = localStorage.getItem("userId");
-
       if (!userId) return;
 
       const result = await createLike(userId, postId);
-      console.log("like:", result);
       setPosts((prev) =>
         prev.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                liked: result.liked,
-                likesCount: result.likesCount,
-              }
+              ...post,
+              liked: result.liked,
+              likesCount: result.likesCount,
+            }
             : post,
         ),
       );
-
-      console.log("like:", result);
     } catch (error) {
       console.error(error);
     }
@@ -175,7 +179,7 @@ export const Feed = () => {
         }}
         sx={sidebarButtonStyle}
       >
-        Configurações
+        Opções
       </Button>
     </Stack>
   );
@@ -191,7 +195,7 @@ export const Feed = () => {
         justifyContent: "center",
       }}
     >
-      {/* 1. BARRA LATERAL FIXED (DESKTOP - md para cima) */}
+      {/* 1. BARRA LATERAL FIXED */}
       <Box
         component="aside"
         sx={{
@@ -225,7 +229,7 @@ export const Feed = () => {
         </Stack>
       </Box>
 
-      {/* 2. BARRA SUPERIOR (MOBILE - ocultada de md para cima) */}
+      {/* 2. BARRA SUPERIOR MOBILE */}
       <Box
         component="header"
         sx={{
@@ -278,7 +282,7 @@ export const Feed = () => {
         </Container>
       </Box>
 
-      {/* 3. MENU LATERAL RETRÁTIL (DRAWER MOBILE) */}
+      {/* 3. MENU LATERAL DRAWER MOBILE */}
       <Drawer
         anchor="left"
         open={mobileMenuOpen}
@@ -323,7 +327,7 @@ export const Feed = () => {
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
         <Container
           maxWidth={false}
-          sx={{ maxWidth: "750px", mx: "auto", pt: 4, pb: 8, px: 2 }}
+          sx={{ maxWidth: "950px", mx: "auto", pt: 4, pb: 8, px: 2 }}
         >
           <Stack spacing={3}>
             {posts.map((post) => (
@@ -429,6 +433,7 @@ export const Feed = () => {
                     mt: 1,
                   }}
                 >
+                  {/* Botão de Like */}
                   <Stack direction="row" alignItems="center" spacing={0.5}>
                     <IconButton
                       onClick={() => handleLike(post.id)}
@@ -459,8 +464,10 @@ export const Feed = () => {
                     </Typography>
                   </Stack>
 
+                  {/* 2. Botão de Comentários Ajustado */}
                   <Stack direction="row" alignItems="center" spacing={0.5}>
                     <IconButton
+                      onClick={() => handleOpenCommentModal(post)} 
                       size="small"
                       sx={{
                         color: "rgba(255, 255, 255, 0.3)",
@@ -480,7 +487,7 @@ export const Feed = () => {
                       fontWeight="600"
                       sx={{ color: "rgba(255,255,255,0.4)", pl: 0.5 }}
                     >
-                      0
+                      {post.comments?.length || 0}
                     </Typography>
                   </Stack>
                 </CardActions>
@@ -492,6 +499,18 @@ export const Feed = () => {
 
       <PostModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <SettingsModal open={openSettings} handleClose={handleCloseSettings} />
+
+      {/* 3. Injeção do Modal de Comentários no DOM */}
+      {selectedPost && (
+        <CommentModal
+          open={isOpenModalComment}
+          onClose={() => {
+            setIsCommentModal(false);
+            setSelectedPost(null);
+          }}
+          post={selectedPost} // <- Envia o post clicado com imagem/legenda para o modal
+        />
+      )}
     </Box>
   );
 };

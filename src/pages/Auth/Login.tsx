@@ -32,7 +32,6 @@ export default function Login() {
     }
   }
 
-  // Estilo compartilhado para os inputs simulando design moderno (estilo de inputs do Twitter/Netflix)
   const textFieldStyle = {
     mb: 2.5,
     "& .MuiInputLabel-root": {
