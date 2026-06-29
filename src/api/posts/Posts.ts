@@ -1,5 +1,11 @@
 import { api } from "../conection";
-import type { GetCommentDTO, IPosts, Post, PostAttributes } from "../types/post";
+import type {
+  CreateCommentDTO,
+  GetCommentDTO,
+  IPosts,
+  Post,
+  PostAttributes,
+} from "../types/post";
 
 export const createPosts = async (postData: any) => {
   const formData = new FormData();
@@ -17,7 +23,7 @@ export const createPosts = async (postData: any) => {
 
 export async function getPosts(): Promise<Post[]> {
   try {
-    const { data } = await api.get<Post[]>("/posts");
+    const { data } = await api.get<Post[]>("/posts/users");
     return data || [];
   } catch (error) {
     console.error("Erro ao buscar posts:", error);
@@ -59,10 +65,24 @@ export async function createLike(userId: string, postId: string) {
 
 export async function getComments(id: string): Promise<GetCommentDTO[]> {
   try {
-    const response = await api.get(`/posts/${id}/comments`)
-    return response.data
+    const response = await api.get(`/posts/${id}/comments`);
+    return response.data;
   } catch (error) {
     console.error("Erro ao buscar comentario:", error);
+    throw error;
+  }
+}
+
+export async function createComment(data: CreateCommentDTO) {
+  try {
+    // 1. Passamos o "data" como segundo argumento para ele ir no corpo (body) da requisição
+    // 2. Certifique-se de que a rota correta do backend é essa mesma.
+    const response = await api.post(`/posts/comment/${data.userId}`, data);
+    
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao criar comentário na API:", error);
     throw error;
   }
 }

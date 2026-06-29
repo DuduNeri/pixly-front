@@ -35,6 +35,12 @@ export type CreatePost = {
   contentImage?: string | null;
 };
 
+export type CreateCommentDTO = {
+  content: string;
+  postId: string;
+  userId: string;
+};
+
 export interface IPosts {
   id: string;
   title?: string;

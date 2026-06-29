@@ -9,16 +9,16 @@ import {
   IconButton,
   Tooltip,
   Grid,
-  Drawer, 
+  Drawer,
 } from "@mui/material";
 import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MenuIcon from "@mui/icons-material/Menu"; 
+import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { SettingsModal } from "./ModalSettings/Settings";
+import { SettingsModal } from "./Layouts/Settings";
 import { ExcludeModal } from "./Layouts/ExcludeModal";
 import { getPostsByUser } from "../api/posts/Posts";
 import type { Post } from "../api/types/post";
@@ -38,8 +38,8 @@ export const Profile = () => {
   const [avatarVersion, setAvatarVersion] = useState(0);
   const [avatar, setAvatar] = useState<string>(" ");
   const [posts, setPosts] = useState<Post[]>([]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); 
-  const [mobileMenuPostOpen, setMobileMenuPostOpen] = useState(false); 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuPostOpen, setMobileMenuPostOpen] = useState(false);
 
   const userId = localStorage.getItem("userId") || "";
   const userName = localStorage.getItem("userName");
@@ -72,8 +72,7 @@ export const Profile = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts, isModalPostOpen ]);
-
+  }, [fetchPosts, isModalPostOpen]);
 
   const fetchUser = useCallback(async () => {
     try {
@@ -112,25 +111,25 @@ export const Profile = () => {
   const renderSidebarNavigation = () => (
     <Stack spacing={1} sx={{ width: "100%" }}>
       <Button
-              variant="contained"
-              startIcon={<AddPhotoAlternateIcon />}
-              onClick={() => {
-                setIsModalPostOpen(true);
-                setMobileMenuPostOpen(false);
-              }}
-              sx={{
-                ...sidebarButtonStyle,
-                backgroundColor: "#0a0a0a",
-                color: "#ffffff",
-                "&:hover": {
-                  ...sidebarButtonStyle["&:hover"], 
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  color: "#000000",
-                },
-              }}
-            >
-              Criar Post
-            </Button>
+        variant="contained"
+        startIcon={<AddPhotoAlternateIcon />}
+        onClick={() => {
+          setIsModalPostOpen(true);
+          setMobileMenuPostOpen(false);
+        }}
+        sx={{
+          ...sidebarButtonStyle,
+          backgroundColor: "#0a0a0a",
+          color: "#ffffff",
+          "&:hover": {
+            ...sidebarButtonStyle["&:hover"],
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            color: "#000000",
+          },
+        }}
+      >
+        Criar Post
+      </Button>
       <Button
         startIcon={<DynamicFeedIcon />}
         onClick={() => {
@@ -179,7 +178,6 @@ export const Profile = () => {
       >
         Opções
       </Button>
-      
     </Stack>
   );
 
@@ -289,7 +287,10 @@ export const Profile = () => {
         onClose={handleToggleMobileMenu}
         slotProps={{
           backdrop: {
-            sx: { backdropFilter: "blur(4px)", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+            sx: {
+              backdropFilter: "blur(4px)",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            },
           },
         }}
         PaperProps={{
@@ -321,11 +322,15 @@ export const Profile = () => {
       </Drawer>
 
       {/* 4. CONTEÚDO CENTRAL DO PERFIL */}
-      <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", width: "100%" }}>
-        <Container
-          maxWidth="md"
-          sx={{ pt: { xs: 5, md: 8 }, pb: 10, px: 2 }}
-        >
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <Container maxWidth="md" sx={{ pt: { xs: 5, md: 8 }, pb: 10, px: 2 }}>
           {/* Bloco de Informações do Usuário */}
           <Box
             sx={{
@@ -372,11 +377,16 @@ export const Profile = () => {
                     fontSize: "2.5rem",
                     fontWeight: "800",
                   }}
-                >
-                 
-                </Avatar>
+                ></Avatar>
               </Box>
-              <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.4)", mt: 0.5, fontWeight: 500 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "rgba(255, 255, 255, 0.4)",
+                  mt: 0.5,
+                  fontWeight: 500,
+                }}
+              >
                 @{userName?.toLowerCase().replace(/\s+/g, "") || "usuario"}
               </Typography>
             </Box>
@@ -394,26 +404,41 @@ export const Profile = () => {
             </Typography>
             <Typography
               variant="body2"
-              sx={{ color: "rgba(255, 255, 255, 0.4)", mt: 0.5, fontWeight: 500 }}
-            >
-            </Typography>
+              sx={{
+                color: "rgba(255, 255, 255, 0.4)",
+                mt: 0.5,
+                fontWeight: 500,
+              }}
+            ></Typography>
           </Box>
 
           <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", mb: 5 }} />
 
           {/* Feed de Posts do Usuário */}
-          <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 3, px: 0.5, color: "rgba(255,255,255,0.9)" }}>
+          <Typography
+            variant="subtitle1"
+            fontWeight="800"
+            sx={{ mb: 3, px: 0.5, color: "rgba(255,255,255,0.9)" }}
+          >
             Suas publicações ({posts.length})
           </Typography>
 
           {posts.length === 0 ? (
-            <Typography textAlign="center" color="gray" sx={{ mt: 6, fontSize: "0.95rem" }}>
+            <Typography
+              textAlign="center"
+              color="gray"
+              sx={{ mt: 6, fontSize: "0.95rem" }}
+            >
               Você ainda não realizou nenhuma publicação.
             </Typography>
           ) : (
             <Grid container spacing={3} alignItems="stretch">
               {posts.map((post) => (
-                <Grid size={{ xs: 12, sm: 6 }} key={post.id} sx={{ display: "flex" }}>
+                <Grid
+                  size={{ xs: 12, sm: 6 }}
+                  key={post.id}
+                  sx={{ display: "flex" }}
+                >
                   <Box
                     sx={{
                       display: "flex",
@@ -423,7 +448,8 @@ export const Profile = () => {
                       width: "100%",
                       overflow: "hidden",
                       border: "1px solid rgba(255,255,255,0.05)",
-                      transition: "border-color 0.2s ease-in-out, transform 0.2s ease-in-out",
+                      transition:
+                        "border-color 0.2s ease-in-out, transform 0.2s ease-in-out",
                       "&:hover": {
                         borderColor: "rgba(255, 255, 255, 0.12)",
                         transform: "translateY(-4px)",
@@ -454,7 +480,15 @@ export const Profile = () => {
                     )}
 
                     {/* 2. CONTEÚDO E TEXTOS */}
-                    <Box sx={{ p: 2.5, flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <Box
+                      sx={{
+                        p: 2.5,
+                        flexGrow: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <Box>
                         <Box
                           sx={{
@@ -464,14 +498,33 @@ export const Profile = () => {
                             mb: 1.5,
                           }}
                         >
-                          <Stack direction="row" spacing={1} alignItems="center">
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                          >
                             <Avatar
-                              src={avatar && avatar.trim() !== "" ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}` : undefined}
-                              sx={{ width: 20, height: 20, fontSize: "0.6rem", fontWeight: "700" }}
+                              src={
+                                avatar && avatar.trim() !== ""
+                                  ? `http://localhost:3333/uploads/${avatar}?v=${avatarVersion}`
+                                  : undefined
+                              }
+                              sx={{
+                                width: 20,
+                                height: 20,
+                                fontSize: "0.6rem",
+                                fontWeight: "700",
+                              }}
                             >
-                              {userName ? userName.charAt(0).toUpperCase() : "?"}
+                              {userName
+                                ? userName.charAt(0).toUpperCase()
+                                : "?"}
                             </Avatar>
-                            <Typography variant="caption" color="rgba(255,255,255,0.4)" fontWeight="600">
+                            <Typography
+                              variant="caption"
+                              color="rgba(255,255,255,0.4)"
+                              fontWeight="600"
+                            >
                               {userName || "Sua publicação"}
                             </Typography>
                           </Stack>
@@ -507,7 +560,7 @@ export const Profile = () => {
                             overflow: "hidden",
                           }}
                         >
-                         {post.title}
+                          {post.title}
                         </Typography>
 
                         <Typography
@@ -551,7 +604,10 @@ export const Profile = () => {
           fetchUser();
         }}
       />
-      <PostModal open={isModalPostOpen} onClose={() => setIsModalPostOpen(false)} />
+      <PostModal
+        open={isModalPostOpen}
+        onClose={() => setIsModalPostOpen(false)}
+      />
       <SettingsModal open={openSettings} handleClose={handleCloseSettings} />
     </Box>
   );

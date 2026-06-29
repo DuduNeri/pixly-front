@@ -16,7 +16,12 @@ interface ExcludeModalProps {
   onDeleted: () => void;
 }
 
-export const ExcludeModal = ({ open, onClose, postId, onDeleted }: ExcludeModalProps) => {
+export const ExcludeModal = ({
+  open,
+  onClose,
+  postId,
+  onDeleted,
+}: ExcludeModalProps) => {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
@@ -50,9 +55,8 @@ export const ExcludeModal = ({ open, onClose, postId, onDeleted }: ExcludeModalP
         },
       }}
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: "grid",
+        placeItems: "center",
         p: 2,
       }}
     >
@@ -87,21 +91,21 @@ export const ExcludeModal = ({ open, onClose, postId, onDeleted }: ExcludeModalP
               variant="body2"
               sx={{ color: "rgba(255, 255, 255, 0.5)", lineHeight: 1.5, px: 1 }}
             >
-              Tem certeza? Essa ação não pode ser desfeita e removerá o post permanentemente do seu feed.
+              Tem certeza? Essa ação não pode ser desfeita e removerá o post
+              permanentemente do seu feed.
             </Typography>
           </Box>
 
           {/* Grupo de Botões (Estilo List-Menu do Instagram) */}
           <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
-
-            {/* Botão de Exclusão (Destrutivo) */}
+            {/* Botão de Exclusão */}
             <Button
               onClick={handleDelete}
               disabled={loading}
               sx={{
                 py: 2,
                 borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-                color: "#ed4956", // Vermelho padrão do Instagram para ações destrutivas
+                color: "#ed4956",
                 fontWeight: "700",
                 textTransform: "none",
                 fontSize: "0.95rem",
@@ -112,7 +116,7 @@ export const ExcludeModal = ({ open, onClose, postId, onDeleted }: ExcludeModalP
                 },
                 "&.Mui-disabled": {
                   color: "rgba(237, 73, 86, 0.3)",
-                }
+                },
               }}
             >
               {loading ? (

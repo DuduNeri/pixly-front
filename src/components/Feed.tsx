@@ -26,7 +26,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useNavigate } from "react-router-dom";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
-import { SettingsModal } from "./../pages/ModalSettings/Settings";
+import { SettingsModal } from "../pages/Layouts/Settings";
 import { createLike } from "../api/posts/Posts";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { CommentModal } from "../pages/Layouts/CommentModal";
@@ -68,7 +68,6 @@ export const Feed = () => {
     return () => {
       isMounted = false;
     };
-
   }, [isModalOpen, isOpenModalComment]);
 
   const handleLike = async (postId: string) => {
@@ -81,10 +80,10 @@ export const Feed = () => {
         prev.map((post) =>
           post.id === postId
             ? {
-              ...post,
-              liked: result.liked,
-              likesCount: result.likesCount,
-            }
+                ...post,
+                liked: result.liked,
+                likesCount: result.likesCount,
+              }
             : post,
         ),
       );
@@ -327,7 +326,7 @@ export const Feed = () => {
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
         <Container
           maxWidth={false}
-          sx={{ maxWidth: "950px", mx: "auto", pt: 4, pb: 8, px: 2 }}
+          sx={{ maxWidth: "770px", mx: "auto", pt: 4, pb: 8, px: 2 }}
         >
           <Stack spacing={3}>
             {posts.map((post) => (
@@ -467,7 +466,7 @@ export const Feed = () => {
                   {/* 2. Botão de Comentários Ajustado */}
                   <Stack direction="row" alignItems="center" spacing={0.5}>
                     <IconButton
-                      onClick={() => handleOpenCommentModal(post)} 
+                      onClick={() => handleOpenCommentModal(post)}
                       size="small"
                       sx={{
                         color: "rgba(255, 255, 255, 0.3)",
@@ -508,7 +507,7 @@ export const Feed = () => {
             setIsCommentModal(false);
             setSelectedPost(null);
           }}
-          post={selectedPost} // <- Envia o post clicado com imagem/legenda para o modal
+          post={selectedPost} 
         />
       )}
     </Box>
