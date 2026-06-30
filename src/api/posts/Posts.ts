@@ -75,8 +75,6 @@ export async function getComments(id: string): Promise<GetCommentDTO[]> {
 
 export async function createComment(data: CreateCommentDTO) {
   try {
-    // 1. Passamos o "data" como segundo argumento para ele ir no corpo (body) da requisição
-    // 2. Certifique-se de que a rota correta do backend é essa mesma.
     const response = await api.post(`/posts/comment/${data.userId}`, data);
     
     console.log(response);
@@ -86,3 +84,15 @@ export async function createComment(data: CreateCommentDTO) {
     throw error;
   }
 }
+
+export async function deleteComment(id: string) {
+  try {
+    const response = await api.delete(`/posts/comment/${id}`);
+    console.log(response);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao excluir comentário:", error.response?.data?.error || error.message);
+    throw error;
+  }
+}
+

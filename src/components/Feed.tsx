@@ -37,7 +37,6 @@ export const Feed = () => {
   const [openSettings, setOpenSettings] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // 1. Estado para controlar o modal de comentário e qual post está ativo
   const [isOpenModalComment, setIsCommentModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
@@ -326,7 +325,7 @@ export const Feed = () => {
       <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
         <Container
           maxWidth={false}
-          sx={{ maxWidth: "770px", mx: "auto", pt: 4, pb: 8, px: 2 }}
+          sx={{ maxWidth: "1000px", mx: "auto", pt: 4, pb: 8, px: 2 }}
         >
           <Stack spacing={3}>
             {posts.map((post) => (
