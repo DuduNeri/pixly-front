@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -7,9 +7,69 @@ import {
     Button,
     Typography,
     Box,
+    IconButton,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { deleteComment } from "../../../api/posts/Posts";
+
+interface CommentType {
+    id: string;
+    content: string;
+    userId: string;
+}
+
+interface CommentItemProps {
+    comment: CommentType;
+    onCommentDeleted: () => Promise<void> | void;
+}
+
+export const CommentItem: React.FC<CommentItemProps> = ({ comment, onCommentDeleted }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const storedUser = localStorage.getItem("@App:user");
+    const currentUser = storedUser ? JSON.parse(storedUser) : null;
+
+    const isOwner = currentUser && currentUser.id === comment.userId;
+    
+
+    return (
+        <Box
+            sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                p: 2,
+                borderBottom: "1px solid rgba(255,255,255,0.05)"
+            }}
+        >
+            {/* CORREÇÃO: Aqui exibimos apenas o texto do comentário atual */}
+            <Typography sx={{ color: "#fff" }}>
+                {comment.content}
+            </Typography>
+
+            {/* A lixeira SÓ aparece se 'isOwner' for verdadeiro */}
+            {isOwner && (
+                <IconButton
+                    onClick={() => setIsModalOpen(true)}
+                    sx={{
+                        color: "rgba(255,255,255,0.4)",
+                        "&:hover": { color: "#f43f5e" }
+                    }}
+                >
+                    <DeleteOutlineIcon />
+                </IconButton>
+            )}
+
+            {/* O seu Modal de confirmação */}
+            <ExcludeComment
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                commentId={comment.id}
+                onSuccess={onCommentDeleted}
+            />
+        </Box>
+    );
+};
 
 interface ExcludeCommentProps {
     open: boolean;
@@ -27,6 +87,8 @@ export const ExcludeComment: React.FC<ExcludeCommentProps> = ({
 
     const handleConfirmDelete = async () => {
         if (!commentId) return;
+
+        console.log("Id do comentario:", commentId)
 
         try {
             await deleteComment(commentId);
@@ -53,11 +115,11 @@ export const ExcludeComment: React.FC<ExcludeCommentProps> = ({
             PaperProps={{
                 sx: {
                     backgroundColor: "#16161a",
-                    backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0))", 
+                    backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0))",
                     color: "#fff",
                     borderRadius: "14px",
                     border: "1px solid rgba(255, 255, 255, 0.07)",
-                    boxShadow: "0px 24px 60px rgba(0, 0, 0, 0.8), inset 0px 1px 0px rgba(255,255,255,0.1)", 
+                    boxShadow: "0px 24px 60px rgba(0, 0, 0, 0.8), inset 0px 1px 0px rgba(255,255,255,0.1)",
                     padding: "12px 12px 4px 12px",
                     maxWidth: "360px",
                     width: "100%",
@@ -113,7 +175,7 @@ export const ExcludeComment: React.FC<ExcludeCommentProps> = ({
                 sx={{
                     px: 2,
                     pb: 2,
-                    flexDirection: "column", 
+                    flexDirection: "column",
                     gap: 1
                 }}
             >
@@ -125,7 +187,7 @@ export const ExcludeComment: React.FC<ExcludeCommentProps> = ({
                         textTransform: "none",
                         fontWeight: "600",
                         fontSize: "0.9rem",
-                        backgroundColor: "#e11d48", 
+                        backgroundColor: "#e11d48",
                         borderRadius: "9px",
                         py: 1.2,
                         boxShadow: "0px 4px 12px rgba(225, 29, 72, 0.3)",

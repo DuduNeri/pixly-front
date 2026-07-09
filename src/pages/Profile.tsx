@@ -39,7 +39,7 @@ export const Profile = () => {
   const [avatar, setAvatar] = useState<string>(" ");
   const [posts, setPosts] = useState<Post[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileMenuPostOpen, setMobileMenuPostOpen] = useState(false);
+  const [, setMobileMenuPostOpen] = useState(false);
 
   const userId = localStorage.getItem("userId") || "";
   const userName = localStorage.getItem("userName");

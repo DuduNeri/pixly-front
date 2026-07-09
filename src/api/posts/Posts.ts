@@ -4,7 +4,6 @@ import type {
   GetCommentDTO,
   IPosts,
   Post,
-  PostAttributes,
 } from "../types/post";
 
 export const createPosts = async (postData: any) => {

@@ -1,5 +1,4 @@
 import { api } from "../conection";
-import type { IUserResponse } from "../types/users.type";
 
 export async function getUsers() {
   try {
